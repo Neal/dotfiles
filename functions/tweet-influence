@@ -1,0 +1,10 @@
+# Determines the max number of tweeple who saw some tweet.
+# If tweet x was retweeted by users A (500 followers) and B (10 followers),
+# influence would be 500 + 10 + x-authors-followers.
+# $ tweet-influence https://twitter.com/chaplinjs/status/303718187437015040
+# # => 11851
+function tweet-influence() {
+  url_or_id=$1
+  count=$(ruby -e "require 'twitter'; id = /\d{10,}/.match('$url_or_id')[0]; initial = Twitter.status(id)[:user][:followers_count]; retweets = Twitter.retweets(id).map(&:user).map(&:followers_count).inject(:+); puts initial + retweets")
+  echo ${fg[green]}${count}${reset_color}
+}

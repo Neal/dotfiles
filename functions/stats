@@ -1,0 +1,6 @@
+# $ git log --no-merges --pretty=format:"%ae" | stats
+# 514 a@example.com
+# 200 b@example.com
+function stats() {
+  sort | uniq -c | sort -r
+}
