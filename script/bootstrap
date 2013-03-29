@@ -13,7 +13,7 @@ info () {
 }
 
 user () {
-  printf "\r  [ \033[0;33m?\033[0m ] $1 "
+  printf "\r  [ \033[0;33m??\033[0m ] $1 "
 }
 
 success () {
@@ -42,6 +42,20 @@ setup_gitconfig () {
   fi
 }
 
+setup_irssi_config () {
+  if ! [ -f irssi/config ]
+  then
+    info 'setup irssiconfig'
+
+    user ' - Enter the ZNC Password: '
+    read -s -e znc_password
+
+    sed -e "s/ZNCPASSWORD/$znc_password/g" irssi/irssi.symlink/config.example > irssi/irssi.symlink/config
+
+    success 'irssiconfig'
+  fi
+}
+
 link_files () {
   ln -s $1 $2
   success "linked $1 to $2"
@@ -67,7 +81,7 @@ install_dotfiles () {
 
       if [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ]
       then
-        user "File already exists: `basename $source`, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
+        user "File already exists: ${dest}, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
         read -n 1 action
 
         case "$action" in
@@ -115,10 +129,11 @@ install_dotfiles () {
 }
 
 setup_gitconfig
+setup_irssi_config
 install_dotfiles
 
 # If we are on a mac, lets install and setup homebrew
-if [ "$(uname -s)" == "Darwin" ]
+if [ "$(uname -s)" == "Darwinn" ]
 then
   info "installing dependencies"
   if . bin/dot > /tmp/dotfiles-dot 2>&1
