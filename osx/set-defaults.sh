@@ -123,9 +123,6 @@ defaults write NSGlobalDomain AppleLocale -string "en_US@currency=USD"
 defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
 defaults write NSGlobalDomain AppleMetricUnits -bool true
 
-# Set the timezone; see `systemsetup -listtimezones` for other values
-systemsetup -settimezone "Europe/Brussels" > /dev/null
-
 # Disable auto-correct
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
@@ -388,11 +385,7 @@ defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Send" "@\\U21a9"
 # Only use UTF-8 in Terminal.app
 defaults write com.apple.terminal StringEncodings -array 4
 
-#########-=-=-=-=-=-=
-
-# Use a modified version of the Pro theme by default in Terminal.app
-open "$HOME/init/Mathias.terminal"
-sleep 1 # Wait a bit to make sure the theme is loaded
+# Use Solarized Dark theme by default in Terminal.app
 defaults write com.apple.terminal "Default Window Settings" -string "Solarized Dark ansi"
 defaults write com.apple.terminal "Startup Window Settings" -string "Solarized Dark ansi"
 
@@ -461,14 +454,3 @@ defaults write org.m0k.transmission DeleteOriginalTorrent -bool true
 defaults write org.m0k.transmission WarningDonate -bool false
 # Hide the legal disclaimer
 defaults write org.m0k.transmission WarningLegal -bool false
-
-###############################################################################
-# Kill affected applications                                                  #
-###############################################################################
-
-#for app in "Address Book" "Calendar" "Contacts" "Dashboard" "Dock" "Finder" \
-#	"Mail" "Safari" "SizeUp" "SystemUIServer" "Terminal" "Transmission" \
-#	"Twitter" "iCal" "iTunes"; do
-#	killall "$app" > /dev/null 2>&1
-#done
-echo "Done. Note that some of these changes require a logout/restart to take effect."
