@@ -8,3 +8,20 @@ then
   alias ll="gls -l --color"
   alias la='gls -A --color'
 fi
+
+# Push and pop directories on directory stack
+alias pu='pushd'
+alias po='popd'
+
+# Basic directory operations
+alias ...='cd ../..'
+alias -- -='cd -'
+
+# Super user
+alias _='sudo'
+alias please='sudo'
+
+# Show history
+alias history='fc -l 1'
+
+alias afind='ack-grep -il'
