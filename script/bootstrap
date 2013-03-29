@@ -135,9 +135,13 @@ install_dotfiles
 # If we are on a mac, lets install and setup homebrew
 if [ "$(uname -s)" == "Darwin" ]
 then
-  info "Setting up OS X preferences, which requires sudo access.\n"
-  $ZSH/osx/set-defaults.sh
-  info "Note that some of these changes require a logout/restart to take effect.\n"
+  user ' - Would you like to set the default OS X preferences? (y/n) '
+  read -e reply
+  if [[ $reply =~ ^[Yy]$ ]]; then
+    info "Setting up OS X preferences, which requires sudo access.\n"
+    $ZSH/osx/set-defaults.sh
+    info "Note that some of these changes require a logout/restart to take effect.\n"
+  fi
 
   if test ! $(which brew); then
     user ' - Homebrew is not installed! Would you like to install it? (y/n) '
