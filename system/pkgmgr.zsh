@@ -12,4 +12,5 @@ elif [[ "$(uname -s)" == "Darwin" ]]; then
 	alias uninstall="brew uninstall"
 	alias remove="$uninstall"
 
+	alias supdate="sudo softwareupdate -ia"
 fi
