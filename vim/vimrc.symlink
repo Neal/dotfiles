@@ -2,15 +2,29 @@
 " This must be first, because it changes other options as a side effect.
 set nocompatible
 
+" Make sure Vim has autocmd support
+if has('autocmd')
+	" Reload .vimrc and .gvimrc files as soon as they have a change
+	augroup VimReload
+		autocmd!
+		autocmd BufWritePost $MYVIMRC source $MYVIMRC
+		autocmd BufWritePost $MYGVIMRC source $MYGVIMRC
+	augroup END
+
+	" Reload statusline.vim file as soon as it changes
+	augroup StatuslineReload
+		autocmd!
+		autocmd BufWritePost ~/.vim/plugin/statusline.vim source
+			\ ~/.vim/plugin/statusline.vim
+endif
+
 " ================ General Config ====================
 
 set shortmess=atI               "Don’t show the intro message when starting Vim
 set number                      "Line numbers are good
 set backspace=indent,eol,start  "Allow backspace in insert mode
-set history=1000                "Store lots of :cmdline history
 set showcmd                     "Show incomplete cmds down the bottom
 set showmode                    "Show current mode down the bottom
-set visualbell                  "No sounds
 set noerrorbells                "Disable error bells
 set autoread                    "Reload files changed outside vim
 set title                       "Show the filename in the window titlebar
@@ -25,9 +39,8 @@ set secure                      "and disable unsafe commands in them
 set modeline                    "Respect modeline in files
 set esckeys                     "Allow cursor keys in insert mode
 set ttyfast                     "Optimize for fast terminal connections
-set ignorecase                  "Ignoring case is a fun trick
-set smartcase                   "And so is Artificial Intellegence!
 set encoding=utf-8 nobomb       "Use UTF-8 without BOM
+set clipboard=unnamed           "Uses the system clipboard as the default register
 
 let mapleader=","               "Change mapleader
 
@@ -44,36 +57,55 @@ set grepprg=grep\ -nH\ $*
 
 " Set off the other paren
 highlight MatchParen ctermbg=4
-" }}}
 
 " ================ Search Settings  =================
 
-set incsearch        "Find the next match as we type the search
-set hlsearch         "Hilight searches by default
-set viminfo='100,f1  "Save up to 100 marks, enable capital marks
+set wrapscan          " Set the search scan to wrap around to the top of the file
+set ignorecase        " Set search scan to ignore case when search is all lowercase
+set smartcase         " But recognize uppercase if it is specified
+set visualbell        " Set to use visual bell --  the beeping sucks!
+set errorbells        " Enable use of (visual) error bells
+set incsearch         " Show results of search scan as it finds them
+set hlsearch          " Hilight searches by default
+set showmatch         " Always show matching bracket, quote etc.
+set matchtime=5       " Tenths of a second to show the matching bracket, quote etc.
+set showcmd           " Show the current command in the lower right corner
+set magic             " Allow use of regular expressions in the search scans
+set viminfo='100,f1   " Save up to 100 marks, enable capital marks
 
-" ================ Turn Off Swap Files ==============
+" ================ History and Undo =================
 
-set noswapfile
-set nobackup
-set nowb
+set history=1000 " Keep {num} entries in the command history
+set nobackup     " Disable backup files
+set noswapfile   " Don't use a swap file in current buffer
+set nowb         " Don't write backup before saving
 
-" ================ Persistent Undo ==================
-" Keep undo history across sessions, by storing in file.
-" Only works all the time.
+if has('persistent_undo')
+	set undofile " Enable persistent undo
 
-silent !mkdir ~/.vim/backups > /dev/null 2>&1
-set undodir=~/.vim/backups
-set undofile
+	" Set persistent undo directory
+	set undodir=~/.vim/undodir
+	" Create undo directory if it doesn't exist
+	if !isdirectory(expand(&undodir))
+		call mkdir(expand(&undodir), 'p')
+	endif
+endif
 
 " ================ Indentation ======================
 
-set autoindent
-set smartindent
-set smarttab
-set shiftwidth=4
-set softtabstop=4
-set tabstop=4
+set noexpandtab   " Make sure that every file uses tabs
+set shiftround    " Round indent to pultiple of 'shiftwidth'
+set backspace=indent,eol,start " Backspace over everything in insert mode
+set smartindent   " Do smart indenting when starting a new line
+set autoindent    " Copy indent from current line, over to the new line
+set fo=vt         " Set the format options ('formatoptions')
+set nojoinspaces  " :h joinspaces
+
+" Set the tab width
+let s:tabwidth=4
+exec 'set tabstop='     . s:tabwidth 
+exec 'set shiftwidth='  . s:tabwidth
+exec 'set softtabstop=' . s:tabwidth
 
 filetype plugin on
 filetype indent on
@@ -114,6 +146,39 @@ set wildignore+=*.png,*.jpg,*.gif
 set scrolloff=8         "Start scrolling when we're 8 lines away from margins
 set sidescrolloff=15
 set sidescroll=1
+
+" ================ Colors ==========================
+
+" fix for 256 color terminal for background=dark
+if !has('gui_running')
+	" Compatibility for Terminal
+	let g:solarized_termtrans=1
+
+	if (&t_Co >= 256 || $TERM == 'xterm-256color')
+		" Do nothing, it handles itself.
+	else
+		" Make Solarized use 16 colors for Terminal support
+		let g:solarized_termcolors=16
+	endif
+endif
+
+" Leave this at normal at all times
+let g:solarized_contrast='normal'
+
+" Non-text items visibility, normal low or high
+let g:solarized_visibility='normal'
+
+" Show trailing white spaces
+let g:solarized_hitrail=1
+
+" Disable the Solarized menu, when using GUI
+let g:solarized_menu=0
+
+" Don't use any underline styles
+let g:solarized_underline=0
+
+set background=dark " Use the light/dark version the color scheme
+silent! colorscheme solarized " Set the color scheme to use, no errors allowed
 
 " ================ Functions ========================
 
