@@ -1,2 +1,17 @@
 # Disable the startup message
 startup_message off
+
+# detach on hangup
+autodetach on
+
+# enable support for the "alternate screen" capability in all windows
+altscreen on
+
+# default scroll-back buffer is tiny.
+defscrollback 2048
+
+# Make xterm scrolling work properly with screen.
+termcapinfo xterm-256color|xterm-color|xterm|xterms|xs|rxvt ti@:te@
+
+# Default to utf8 on
+defutf8 on
