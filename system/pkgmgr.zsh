@@ -1,4 +1,4 @@
-if [[ "$(cat /etc/issue 2> /dev/null)" =~ Ubuntu ]]; then
+if [[ "$(uname -s)" == "Linux" ]]; then
 
 	alias update="sudo apt-get -qq update && sudo apt-get upgrade && sudo apt-get dist-upgrade"
 	alias install="sudo apt-get install"
