@@ -20,8 +20,8 @@ sudo scutil --set HostName "Neal's MacBook Pro"
 sudo scutil --set LocalHostName "Neals-MacBook-Pro"
 sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "Neals-MacBook-Pro"
 
-# Set standby delay to 24 hours (default is 1 hour)
-sudo pmset -a standbydelay 86400
+# Set standby delay to 2 hours (default is 1 hour)
+sudo pmset -a standbydelay 7200
 
 # Menu bar: disable transparency
 defaults write NSGlobalDomain AppleEnableMenuBarTransparency -bool false
