@@ -8,3 +8,5 @@ export EDITOR='vim'
 
 alias q="$EDITOR"
 alias q.='q .'
+
+export TZ="America/Chicago"
