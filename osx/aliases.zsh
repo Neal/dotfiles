@@ -13,6 +13,18 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 	# Lock current session and proceed to the login screen.
 	alias lock='/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend'
 
+	# Show/hide hidden files in Finder
+	alias showhiddenfiles='defaults write com.apple.finder AppleShowAllFiles -bool true'
+	alias hidehiddenfiles='defaults write com.apple.finder AppleShowAllFiles -bool false'
+
+	# Show/hide filename extensions in Finder
+	alias showfileextensions='defaults write NSGlobalDomain AppleShowAllExtensions -bool true'
+	alias hidefileextensions='defaults write NSGlobalDomain AppleShowAllExtensions -bool false'
+
+	# Secure erase trash
+	alias securetrashon='defaults write com.apple.finder EmptyTrashSecurely -bool true'
+	alias securetrashoff='defaults write com.apple.finder EmptyTrashSecurely -bool false'
+
 	# Python virtualenv shortcuts.
 	alias venv-init='virtualenv venv -p /usr/local/bin/python --no-site-packages'
 	alias venv-activate='source venv/bin/activate'
