@@ -61,6 +61,18 @@ link_files () {
   success "linked $1 to $2"
 }
 
+install_oh-my-zsh () {
+  if [ ! -d ~/.oh-my-zsh ]
+  then
+    info 'Cloning Oh My Zsh'
+    hash git >/dev/null && /usr/bin/env git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh || {
+      fail 'git not installed'
+    }
+    success 'oh-my-zsh'
+  fi
+  /usr/bin/env rm -rf ~/.oh-my-zsh/custom/themes && ln -s ~/.dotfiles/oh-my-zsh/themes ~/.oh-my-zsh/custom/themes
+}
+
 install_dotfiles () {
   info 'installing dotfiles'
 
@@ -130,6 +142,7 @@ install_dotfiles () {
 
 setup_gitconfig
 setup_irssi_config
+install_oh-my-zsh
 install_dotfiles
 
 # If we are on a mac, lets install and setup homebrew
@@ -139,7 +152,7 @@ then
   read -e reply
   if [[ $reply =~ ^[Yy]$ ]]; then
     info "Setting up OS X preferences, which requires sudo access.\n"
-    $ZSH/osx/set-defaults.sh
+    $DOTFILES/osx/set-defaults.sh
     info "Note that some of these changes require a logout/restart to take effect.\n"
   fi
 
@@ -158,13 +171,13 @@ then
     fi
   fi
 
-  info "installing dependencies"
-  if . bin/dot > /tmp/dotfiles-dot 2>&1
-  then
-    success "dependencies installed"
-  else
-    fail "error installing dependencies"
-  fi
+#  info "installing dependencies"
+#  if . bin/dot > /tmp/dotfiles-dot 2>&1
+#  then
+#    success "dependencies installed"
+#  else
+#    fail "error installing dependencies"
+#  fi
 fi
 
 echo ''
