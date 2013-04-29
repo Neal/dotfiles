@@ -24,10 +24,10 @@ export UPDATE_ZSH_DAYS=6
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(cp extract history git gitfast github git-extras lol rsync safe-paste screen)
+plugins=(battery cp extract history git gitfast github git-extras lol rsync safe-paste screen)
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	plugins=(${plugins[@]} battery brew copydir copyfile osx sublime terminalapp)
+	plugins=(${plugins[@]} brew copydir copyfile osx sublime terminalapp)
 elif [ -f /etc/debian_version ]; then
 	plugins=(${plugins[@]} debian)
 fi
