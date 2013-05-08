@@ -24,7 +24,7 @@ export UPDATE_ZSH_DAYS=6
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(battery cp extract history git gitfast github git-extras lol rsync safe-paste screen)
+plugins=(battery colored-man colorize cp extract history git gitfast github git-extras lol rsync safe-paste screen)
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
 	plugins=(${plugins[@]} brew copydir copyfile osx sublime terminalapp)
