@@ -1,0 +1,99 @@
+#!/bin/bash
+#
+# putiodl - put.io cli downloader
+#
+# Copyright (C) 2013 Neal <neal@ineal.me>
+#
+# Dependencies: jsawk, curl, wget
+#
+# Make sure ~/.putiodl exists and contains your put.io OAuth token.
+#
+
+OAUTH_TOKEN=$(cat ~/.putiodl)
+
+if [[ ${OAUTH_TOKEN} == "" ]]; then
+	echo "Make sure ~/.putiodl exists and contains your put.io OAuth token."
+fi
+
+usage() {
+	cat << EOF
+usage: putiodl [options]...
+
+   -l    List all files
+   -i    File ID
+   -o    Output file location
+   -n    Get file info
+   -z    Download zip
+EOF
+	exit 1
+}
+
+while getopts "hli:o:nz" OPTION; do
+	case ${OPTION} in
+		l)
+			FILEID="list"
+			;;
+		i)
+			FILEID="${OPTARG}"
+			;;
+		o)
+			OUTFILELOC="${OPTARG}"
+			;;
+		n)
+			INFO_ONLY=true
+			;;
+		z)
+			DLZIP=true
+			;;
+		?)
+			usage
+			;;
+	esac
+done
+
+
+if [[ $(which curl) == "" ]]; then
+	echo "curl not found"
+	exit 1
+fi
+if [[ $(which wget) == "" ]]; then
+	echo "wget not found"
+	exit 1
+fi
+if [[ $(which jsawk) == "" ]]; then
+	echo "jsawk not found"
+	exit 1
+fi
+
+
+if [[ ${FILEID} == "" ]]; then
+	usage
+fi
+
+
+FILEINFO=$(curl -sH 'Accept: application/json' "https://api.put.io/v2/files/${FILEID}?oauth_token=${OAUTH_TOKEN}")
+
+if [[ ${INFO_ONLY} == true ]]; then
+	echo "${FILEINFO}"
+	exit 0
+fi
+
+if [[ $(echo ${FILEINFO} | jsawk "return this.status") != "OK" ]]; then
+	echo "Invalid File ID."
+	exit 1
+fi
+
+[[ ${DLZIP} == true ]] && DL="zip" || DL="download"
+
+if [[ ${OUTFILELOC} == "" ]]; then
+	OUTFILELOC=$(echo ${FILEINFO} | jsawk "return this.file.name")
+	[[ ${DLZIP} == true ]] && OUTFILELOC="${OUTFILELOC}.zip"
+fi
+
+
+# Could use curl to download but I like wget's progress bar better :P
+#curl --location-trusted "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -o ${OUTFILELOC} -C -
+
+echo wget -c "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -O ${OUTFILELOC}
+
+exit 0
