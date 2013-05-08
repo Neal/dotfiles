@@ -94,6 +94,6 @@ fi
 # Could use curl to download but I like wget's progress bar better :P
 #curl --location-trusted "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -o ${OUTFILELOC} -C -
 
-echo wget -c "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -O ${OUTFILELOC}
+wget -c "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -O ${OUTFILELOC}
 
 exit 0
