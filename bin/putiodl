@@ -4,7 +4,7 @@
 #
 # Copyright (C) 2013 Neal <neal@ineal.me>
 #
-# Dependencies: jsawk, curl, wget
+# Dependencies: jq, curl, wget
 #
 # Make sure ~/.putiodl exists and contains your put.io OAuth token.
 #
@@ -60,8 +60,8 @@ if [[ $(which wget) == "" ]]; then
 	echo "wget not found"
 	exit 1
 fi
-if [[ $(which jsawk) == "" ]]; then
-	echo "jsawk not found"
+if [[ $(which jq) == "" ]]; then
+	echo "jq not found"
 	exit 1
 fi
 
@@ -78,7 +78,7 @@ if [[ ${INFO_ONLY} == true ]]; then
 	exit 0
 fi
 
-if [[ $(echo ${FILEINFO} | jsawk "return this.status") != "OK" ]]; then
+if [[ $(echo ${FILEINFO} | jq ".status") != "\"OK\"" ]]; then
 	echo "Invalid File ID."
 	exit 1
 fi
@@ -86,7 +86,7 @@ fi
 [[ ${DLZIP} == true ]] && DL="zip" || DL="download"
 
 if [[ ${OUTFILELOC} == "" ]]; then
-	OUTFILELOC=$(echo ${FILEINFO} | jsawk "return this.file.name")
+	OUTFILELOC=$(echo ${FILEINFO} | jq ".file.name")
 	[[ ${DLZIP} == true ]] && OUTFILELOC="${OUTFILELOC}.zip"
 fi
 
