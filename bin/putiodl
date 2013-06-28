@@ -86,7 +86,7 @@ fi
 [[ ${DLZIP} == true ]] && DL="zip" || DL="download"
 
 if [[ ${OUTFILELOC} == "" ]]; then
-	OUTFILELOC=$(echo ${FILEINFO} | jq ".file.name")
+	OUTFILELOC=$(echo ${FILEINFO} | jq -r '.file.name')
 	[[ ${DLZIP} == true ]] && OUTFILELOC="${OUTFILELOC}.zip"
 fi
 
@@ -94,6 +94,6 @@ fi
 # Could use curl to download but I like wget's progress bar better :P
 #curl --location-trusted "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -o ${OUTFILELOC} -C -
 
-wget -c "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -O ${OUTFILELOC}
+wget -c "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -O "${OUTFILELOC}"
 
 exit 0
