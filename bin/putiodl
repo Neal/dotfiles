@@ -32,6 +32,7 @@ while getopts "hli:o:nz" OPTION; do
 	case ${OPTION} in
 		l)
 			FILEID="list"
+			INFO_ONLY=true
 			;;
 		i)
 			FILEID="${OPTARG}"
