@@ -1,0 +1,137 @@
+set -g default-terminal "screen-256color"
+set -g mode-mouse on
+
+# Set the prefix to ^A.
+unbind C-b
+set -g prefix ^A
+bind a send-prefix
+
+# Bind appropriate commands similar to screen.
+# lockscreen ^X x 
+unbind ^X
+bind ^X lock-server
+unbind x
+bind x lock-server
+
+# screen ^C c 
+unbind ^C
+bind ^C new-window
+unbind c
+bind c new-window
+
+# detach ^D d
+unbind ^D
+bind ^D detach
+
+# displays * 
+unbind *
+bind * list-clients
+
+# next ^@ ^N sp n 
+unbind ^@
+bind ^@ next-window
+unbind ^N
+bind ^N next-window
+unbind " "
+bind " " next-window
+unbind n
+bind n next-window
+
+# title A
+unbind A
+bind A command-prompt "rename-window %%"
+
+# other ^A
+unbind ^A
+bind ^A last-window
+
+# prev ^H ^P p ^? 
+unbind ^H
+bind ^H previous-window
+unbind ^P
+bind ^P previous-window
+unbind p
+bind p previous-window
+unbind BSpace
+bind BSpace previous-window
+
+# windows ^W w 
+unbind ^W
+bind ^W list-windows
+unbind w
+bind w list-windows
+
+# quit \ 
+unbind '\'
+bind '\' confirm-before "kill-server"
+
+# kill K k 
+unbind K
+bind K confirm-before "kill-window"
+unbind k
+bind k confirm-before "kill-window"
+
+# redisplay ^L l 
+unbind ^L
+bind ^L refresh-client
+unbind l
+bind l refresh-client
+
+# split -v |
+unbind |
+bind | split-window -h
+
+unbind _
+bind _ split-window -v
+
+# :kB: focus up
+unbind Tab
+bind Tab select-pane -t:.+
+unbind BTab
+bind BTab select-pane -t:.-
+
+# " windowlist -b
+unbind '"'
+bind '"' choose-window
+
+# Custom stuff to match screen
+set -g base-index 1
+set -g set-titles on
+set -g set-titles-string 'tmux (#I: #W)'
+set -g status-utf8 on
+setw -g utf8 on
+
+# Now to set colors...
+set -g status-bg default
+set -g status-fg default
+set -g status-left ''
+set -g status-right '%a %Y-%m-%d %H:%M'
+
+
+set -g message-bg default
+set -g message-fg green
+set -g message-attr bold
+
+# All other windows
+setw -g window-status-format '#I #W'
+setw -g window-status-fg default
+setw -g window-status-fg default
+setw -g window-status-attr none
+
+# Current window settings
+setw -g window-status-current-format '(#I #W)'
+setw -g window-status-current-fg cyan
+setw -g window-status-current-bg default
+setw -g window-status-current-attr bold
+
+# Windows with an alert
+setw -g window-status-bell-fg yellow
+setw -g window-status-bell-bg default
+setw -g window-status-bell-attr bold
+
+# kill a pane
+bind X kill-pane
+
+# I like Vim to be nice and snappy, thx
+set-option -sg escape-time 50
+
