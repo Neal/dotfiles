@@ -65,7 +65,7 @@ install_oh-my-zsh () {
   if [ ! -d ~/.oh-my-zsh ]
   then
     info 'Cloning Oh My Zsh'
-    hash git >/dev/null && /usr/bin/env git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh || {
+    hash git >/dev/null && /usr/bin/env git clone git@github.com:Neal/oh-my-zsh.git ~/.oh-my-zsh || {
       fail 'git not installed'
     }
     success 'oh-my-zsh'
