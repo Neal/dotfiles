@@ -13,10 +13,7 @@ function myjobs() {
 }
  
 if [[ "$TERM" != "dumb" ]] && [[ "$DISABLE_LS_COLORS" != "true" ]]; then
-    PROMPT='
-%{$fg[red]%}%n%{$reset_color%}@%{$fg[green]%}%m%{$reset_color%}:%{$fg[blue]%}%~%{$reset_color%} %{$fg[yellow]%}%w %T%{$fg[magenta]%} %!%{$reset_color%} $(battery_pct_prompt)
-$(myjobs)%(!.%{$fg[red]%}#.%{$fg[cyan]%}❯)%{$reset_color%} '
-
+    PROMPT='%{$fg[red]%}%n%{$reset_color%}@%{$fg[green]%}%m%{$reset_color%}:%{$fg[blue]%}%~%{$reset_color%} %(!.%{$fg[red]%}#.%{$fg[yellow]%}»)%{$reset_color%} '
 
     ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[green]%}"
     ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
