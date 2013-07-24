@@ -1,0 +1,7 @@
+#!/bin/bash
+USERS=`who | wc -l`
+if [ $USERS -gt 1 ] ; then
+	echo -n "$USERS users"
+else
+	echo -n "$USERS user"
+fi
