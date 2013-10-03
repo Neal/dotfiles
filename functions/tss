@@ -1,0 +1,3 @@
+function tss() {
+	curl -s "http://api.ineal.me/tss/manifest/$1/$2" | sed 's/<string>\$ECID\$<\/string>/<integer>1234567890<\/integer>/g' | curl -s "http://gs.apple.com/TSS/controller?action=2" -X POST -d @- -H "Content-type: text/xml; charset=utf8"
+}
