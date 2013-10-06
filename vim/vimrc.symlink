@@ -21,7 +21,6 @@ endif
 " ================ General Config ====================
 
 set shortmess=atI               "Don’t show the intro message when starting Vim
-set number                      "Line numbers are good
 set backspace=indent,eol,start  "Allow backspace in insert mode
 set showcmd                     "Show incomplete cmds down the bottom
 set showmode                    "Show current mode down the bottom
