@@ -24,10 +24,10 @@ DISABLE_AUTO_UPDATE="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(battery colored-man colorize cp extract history git gitfast github git-extras lol rsync safe-paste screen tmux tmuxinator)
+plugins=(battery colored-man cp extract history gem git gitfast github git-extras lol mosh npm python rsync safe-paste screen tmux tmuxinator vundle)
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	plugins=(${plugins[@]} brew copydir copyfile osx sublime terminalapp)
+	plugins=(${plugins[@]} brew copydir copyfile osx sublime)
 elif [ -f /etc/debian_version ]; then
 	plugins=(${plugins[@]} debian)
 fi
