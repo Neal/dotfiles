@@ -1,47 +1,68 @@
 servers = (
-  { 
+  {
     address = "znc.ineal.me";
     chatnet = "Squish";
     port = "8889";
     use_ssl = "yes";
-    password = "neal/Squish:ZNCPASSWORD";
+    password = "neal/squish:ZNCPASSWORD";
   },
-  { 
+  {
     address = "znc.ineal.me";
     chatnet = "Saurik";
     port = "8889";
     use_ssl = "yes";
     password = "neal/saurik:ZNCPASSWORD";
   },
-  { 
+  {
     address = "znc.ineal.me";
     chatnet = "Freenode";
     port = "8889";
     use_ssl = "yes";
     password = "neal/freenode:ZNCPASSWORD";
   },
-  { 
+  {
+    address = "znc.ineal.me";
+    chatnet = "Freenode2";
+    port = "8889";
+    use_ssl = "yes";
+    password = "neal/freenode2:ZNCPASSWORD";
+  },
+  {
     address = "znc.ineal.me";
     chatnet = "EFNet";
     port = "8889";
     use_ssl = "yes";
     password = "neal/efnet:ZNCPASSWORD";
   },
-  { 
+  {
     address = "znc.ineal.me";
     chatnet = "Freedom";
     port = "8889";
     use_ssl = "yes";
     password = "neal/freedom:ZNCPASSWORD";
   },
-  { 
+  {
     address = "znc.ineal.me";
     chatnet = "Rizon";
     port = "8889";
     use_ssl = "yes";
     password = "neal/rizon:ZNCPASSWORD";
   },
-  { 
+  {
+    address = "znc.ineal.me";
+    chatnet = "OFTC";
+    port = "8889";
+    use_ssl = "yes";
+    password = "neal/oftc:ZNCPASSWORD";
+  },
+  {
+    address = "znc.ineal.me";
+    chatnet = "Flux";
+    port = "8889";
+    use_ssl = "yes";
+    password = "neal/qwertyoruiop:ZNCPASSWORD";
+  },
+  {
     address = "znc.ineal.me";
     chatnet = "Nixtrix";
     port = "8889";
@@ -60,6 +81,9 @@ chatnets = {
   Freenode = {
     type = "IRC";
   };
+  Freenode2 = {
+    type = "IRC";
+  };
   EFNet = {
     type = "IRC";
   };
@@ -67,6 +91,12 @@ chatnets = {
     type = "IRC";
   };
   Rizon = {
+    type = "IRC";
+  };
+  OFTC = {
+    type = "IRC";
+  };
+  Flux = {
     type = "IRC";
   };
   Nixtrix = {
