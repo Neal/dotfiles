@@ -21,6 +21,7 @@ set-option -g set-titles-string '[#S:#I #H] #W'  # use screen title
 
 
 # misc settings
+set -g utf8
 set-window-option -g utf8 on
 set-window-option -g automatic-rename on
 set -g mode-mouse off
@@ -87,7 +88,7 @@ bind S command-prompt "neww 'exec ssh %%'"
 bind '~' split-window "exec htop"
 
 # scrollback buffer n lines
-set -g history-limit 5000
+set -g history-limit 10000
 
 bind O select-pane -t :.-
 bind | split-window -h
