@@ -22,16 +22,36 @@ set -g terminal-overrides 'xterm*:smcup@:rmcup@'
 set-option -g set-titles on
 set-option -g set-titles-string '[#S:#I #H] #W'  # use screen title
 
-
 # misc settings
 set -g utf8
 set-window-option -g utf8 on
 set-window-option -g automatic-rename on
-set -g mode-mouse off
-set -g mouse-select-window on
-set -g mouse-select-pane on
 set -g mouse-utf8 on
-set bell-action any
+
+# Ring the bell if any background window rang a bell
+set -g bell-action any
+
+# mouse settings
+set -g mode-mouse on
+set -g mouse-resize-pane on
+set -g mouse-select-pane on
+set -g mouse-select-window on
+
+# Toggle mouse on
+bind m \
+    set -g mode-mouse on \;\
+    set -g mouse-resize-pane on \;\
+    set -g mouse-select-pane on \;\
+    set -g mouse-select-window on \;\
+    display 'Mouse: ON'
+
+# Toggle mouse off
+bind M \
+    set -g mode-mouse off \;\
+    set -g mouse-resize-pane off \;\
+    set -g mouse-select-pane off \;\
+    set -g mouse-select-window off \;\
+    display 'Mouse: OFF'
 
 # statusbar
 set -g status-bg colour235
@@ -93,9 +113,36 @@ bind '~' split-window "exec htop"
 # scrollback buffer n lines
 set -g history-limit 10000
 
-bind O select-pane -t :.-
-bind | split-window -h
-bind v split-window "exec vim"
+# Vim-style copy/paste
+unbind [
+bind y copy-mode
+unbind p
+bind p paste-buffer
+bind -t vi-copy H start-of-line
+bind -t vi-copy L end-of-line
+bind -t vi-copy v begin-selection
+bind -t vi-copy y copy-selection
+bind -t vi-copy Escape cancel
+
+unbind -
+unbind _
+unbind '\'
+unbind '|'
+unbind s
+unbind C-s
+unbind v
+unbind C-v
+unbind O
+
+bind-key - split-window
+bind-key _ split-window
+bind-key s split-window
+bind-key C-s split-window
+bind-key \ split-window -h
+bind-key | split-window -h
+bind-key v split-window -h
+bind-key C-v split-window -h
+bind-key O select-pane -t :.-
 
 
 # Bind appropriate commands similar to screen.
@@ -161,12 +208,6 @@ bind ^L refresh-client
 unbind l
 bind l refresh-client
 
-# split
-unbind |
-bind | split-window -h
-unbind _
-bind _ split-window -v
-
 # :kB: focus up
 unbind Tab
 bind Tab select-pane -t:.+
@@ -176,5 +217,11 @@ bind BTab select-pane -t:.-
 # " windowlist -b
 unbind '"'
 bind '"' choose-window
+
+# reload tmux config
+unbind r
+bind r \
+    source-file ~/.tmux.conf \;\
+    display 'Reloaded tmux config.'
 
 
