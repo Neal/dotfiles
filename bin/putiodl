@@ -9,11 +9,14 @@
 # Make sure ~/.putiodl exists and contains your put.io OAuth token.
 #
 
+info ()  { printf "$*\n"; }
+warn ()  { printf "[\033[00;33mWARN\033[0m] $*\n" >&2; }
+error () { printf "[\033[00;31mERROR\033[0m] $*\n" >&2; }
+fatal () { printf "[\033[00;31mERROR\033[0m] $*\n" >&2; exit 1; }
+
 OAUTH_TOKEN=$(cat ~/.putiodl)
 
-if [[ ${OAUTH_TOKEN} == "" ]]; then
-	echo "Make sure ~/.putiodl exists and contains your put.io OAuth token."
-fi
+[[ ${OAUTH_TOKEN} == "" ]] && fatal "Make sure ~/.putiodl exists and contains your put.io OAuth token."
 
 usage() {
 	cat << EOF
@@ -25,7 +28,7 @@ usage: putiodl [options]...
    -n    Get file info
    -z    Download zip
 EOF
-	exit 1
+	exit 255
 }
 
 while getopts "hli:o:nz" OPTION; do
@@ -53,23 +56,11 @@ while getopts "hli:o:nz" OPTION; do
 done
 
 
-if [[ $(which curl) == "" ]]; then
-	echo "curl not found"
-	exit 1
-fi
-if [[ $(which wget) == "" ]]; then
-	echo "wget not found"
-	exit 1
-fi
-if [[ $(which jq) == "" ]]; then
-	echo "jq not found"
-	exit 1
-fi
+test ! $(which curl) && fatal "curl not found"
+test ! $(which wget) && fatal "wget not found"
+test ! $(which jq) && fatal "jq not found"
 
-
-if [[ ${FILEID} == "" ]]; then
-	usage
-fi
+[[ ${FILEID} == "" ]] && usage
 
 
 FILEINFO=$(curl -sH 'Accept: application/json' "https://api.put.io/v2/files/${FILEID}?oauth_token=${OAUTH_TOKEN}")
@@ -79,10 +70,7 @@ if [[ ${INFO_ONLY} == true ]]; then
 	exit 0
 fi
 
-if [[ $(echo ${FILEINFO} | jq ".status") != "\"OK\"" ]]; then
-	echo "Invalid File ID."
-	exit 1
-fi
+[[ $(echo ${FILEINFO} | jq ".status") != "\"OK\"" ]] && fatal "Invalid File ID."
 
 [[ ${DLZIP} == true ]] && DL="zip" || DL="download"
 
@@ -92,9 +80,6 @@ if [[ ${OUTFILELOC} == "" ]]; then
 fi
 
 
-# Could use curl to download but I like wget's progress bar better :P
-#curl --location-trusted "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -o ${OUTFILELOC} -C -
-
-wget -c "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -O "${OUTFILELOC}"
+wget -c --config /dev/null "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -O "${OUTFILELOC}"
 
 exit 0
