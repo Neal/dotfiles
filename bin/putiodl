@@ -4,7 +4,7 @@
 #
 # Copyright (C) 2013 Neal <neal@ineal.me>
 #
-# Dependencies: jq, curl, wget
+# Dependencies: jq, curl
 #
 # Make sure ~/.putiodl exists and contains your put.io OAuth token.
 #
@@ -55,18 +55,15 @@ while getopts "hli:o:nz" OPTION; do
 	esac
 done
 
-
 test ! $(which curl) && fatal "curl not found"
-test ! $(which wget) && fatal "wget not found"
 test ! $(which jq) && fatal "jq not found"
 
 [[ ${FILEID} == "" ]] && usage
 
-
 FILEINFO=$(curl -sH 'Accept: application/json' "https://api.put.io/v2/files/${FILEID}?oauth_token=${OAUTH_TOKEN}")
 
 if [[ ${INFO_ONLY} == true ]]; then
-	echo "${FILEINFO}"
+	info "${FILEINFO}"
 	exit 0
 fi
 
@@ -79,7 +76,7 @@ if [[ ${OUTFILELOC} == "" ]]; then
 	[[ ${DLZIP} == true ]] && OUTFILELOC="${OUTFILELOC}.zip"
 fi
 
-
-wget -c --config /dev/null "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -O "${OUTFILELOC}"
+info "Downloading ${OUTFILELOC}"
+curl -# --location-trusted "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -o ${OUTFILELOC} -C -
 
 exit 0
