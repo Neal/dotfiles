@@ -1,4 +1,7 @@
 # Set custom OS X PATH
 if [[ "$(uname -s)" == "Darwin" ]]; then
-	export PATH=~/pebble-dev/arm-cs-tools/bin:$PATH
+	# Pebble SDK
+	export PATH=$(HOME)/pebble-dev/arm-cs-tools/bin:$PATH
+	# Coreutils
+	export PATH=$(brew --prefix coreutils)/libexec/gnubin:$PATH
 fi
