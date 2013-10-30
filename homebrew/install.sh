@@ -32,13 +32,21 @@ brew tap homebrew/dupes
 brew install homebrew/dupes/grep
 brew install homebrew/dupes/screen
 
+# Taps
+brew tap phinze/homebrew-cask
+
 # Install everything else
 brew install ack
-brew install automake
 brew install autoconf
+brew install autoenv
+brew install automake
+brew install bash
+brew install brew-cask
 brew install cmake
+brew install curl
 brew install git
 brew install grc
+brew install grep
 brew install htop-osx
 brew install macvim
 brew install mtr
@@ -47,13 +55,14 @@ brew install openssl
 brew install python
 brew install rename
 brew install ruby
+brew install screen
 brew install sqlite
 brew install tmux
 brew install tree
 brew install unrar
 brew install vim
 brew install wget
-brew install wireshark
+brew install youtube-dl
 brew install zsh
 
 # Remove outdated versions from the cellar
