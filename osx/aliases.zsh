@@ -35,9 +35,15 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 	# Start ScreenSaver. This will lock the screen if locking is enabled.
 	alias ss="open /System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app"
 
+	# Change working directory and open editor
 	function cded() {
 		cd $1
 		$EDITOR .
+	}
+
+	# Change working directory to the top-most Finder window location
+	function cdf() { # short for `cdfinder`
+		cd "$(osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)')"
 	}
 
 	# Gets password from OS X Keychain.
