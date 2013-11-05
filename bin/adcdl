@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+WORKING_DIR="${HOME}/.adc"
+COOKIES_LOC="${WORKING_DIR}/cookies.txt"
+CREDS_LOC="${WORKING_DIR}/.credentials"
+
+info()  { printf "$1\n"; [ "$2" ] && exit $2; }
+warn()  { printf "[\033[00;33mWARN\033[0m] $*\n" >&2; }
+fatal() { printf "[\033[00;31mERROR\033[0m] $*\n" >&2; exit 1; }
+
+[ ! "$1" ] && info 'usage: adcdl <url>' 255
+
+IFS=$'\r\n' LOGIN=($(cat ${CREDS_LOC}))
+ADC_USER=${LOGIN[0]}
+ADC_PASS=${LOGIN[1]}
+
+[ ! ${ADC_USER} ] || [ ! ${ADC_PASS} ] && fatal "Make sure ${CREDS_LOC} contains your ADC login and password seperated by a newline."
+
+URL=$(printf "$1" | sed -E 's@http://adcdownload.apple.com|https://developer.apple.com/(iphone|ios)/download.action\?path=@https://developer.apple.com/devcenter/download.action?path=@')
+URL_PATH=$(printf "${URL}" | sed -E 's@https://developer.apple.com/devcenter/download.action\?path=@@')
+
+if [[ "${URL}" != "login" ]]; then
+	if grep -q myacinfo ${COOKIES_LOC} 2>/dev/null; then
+		info "Starting download for ${URL_PATH}"
+		STATUS_CODE=$(curl -4 -L -O -C - -b ${COOKIES_LOC} "${URL}" --write-out '%{http_code}')
+		RETURN_CODE=$?
+		if test ${RETURN_CODE} -eq 33; then
+			warn 'Session expired!'
+		elif test ${RETURN_CODE} -ne 0; then
+			if test ${STATUS_CODE} -ne 403; then
+				fatal "Unexpected error ${STATUS_CODE} (return code ${RETURN_CODE})"
+			fi
+			warn 'Not logged in!'
+		else
+			exit 0
+		fi
+	fi
+fi
+
+info 'Logging in to ADC...'
+
+[[ $(curl -4 -s -L "https://developer.apple.com/devcenter/download.action") =~ form[^\>]+action=\"([^\"]+)\" ]] && LOGIN_URL="https://daw.apple.com/${BASH_REMATCH[1]}"
+
+if [ ! "${LOGIN_URL}" ]; then
+	fatal 'Unexpected response received.'
+fi
+
+[ -f ${COOKIES_LOC} ] && rm ${COOKIES_LOC}
+
+curl -4 -s -L -c ${COOKIES_LOC} -F theAccountName="${ADC_USER}" -F theAccountPW="${ADC_PASS}" "${LOGIN_URL}" -o /dev/null
+if ! grep -q myacinfo ${COOKIES_LOC} 2>/dev/null; then
+	fatal 'Failed!'
+fi
+
+[[ "${URL}" == "login" ]] && info 'Success!' 0
+
+info "Starting download for ${URL_PATH}"
+STATUS_CODE=$(curl -4 -L -O -C - -b ${COOKIES_LOC} "${URL}" --write-out '%{http_code}')
+if test $? -ne 0; then
+	if test ${STATUS_CODE} -ne 403; then
+		fatal "Unexpected error ${STATUS_CODE}"
+	fi
+	fatal 'Failed to login or not allowed to download.'
+fi
