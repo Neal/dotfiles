@@ -1,5 +1,5 @@
-# Set custom OS X PATH
-if [[ "$(uname -s)" == "Darwin" ]]; then
+# Set custom OS X PATH. Abort if not OS X.
+[[ "$OSTYPE" =~ ^darwin ]] || return 1
 	# Pebble SDK
 	export PATH=$HOME/pebble-dev/arm-cs-tools/bin:$PATH
 	# Coreutils

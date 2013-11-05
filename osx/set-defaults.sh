@@ -4,6 +4,9 @@
 #
 # Run ./set-defaults.sh and you'll be good to go.
 
+# Abort if not OS X
+[[ "$OSTYPE" =~ ^darwin ]] || return 1
+
 # Ask for the administrator password upfront
 sudo -v
 
