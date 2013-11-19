@@ -2,11 +2,11 @@
 #
 # bootstrap installs things.
 
-DOTFILES_ROOT="`pwd`"
+DOTFILES_ROOT="$(pwd)"
 
 set -e
 
-echo ''
+printf "\n"
 
 info () {
   printf "  [ \033[00;34m..\033[0m ] $1"
@@ -21,9 +21,8 @@ success () {
 }
 
 fail () {
-  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
-  echo ''
-  exit
+  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n\n"
+  exit 1
 }
 
 setup_gitconfig () {
@@ -146,7 +145,7 @@ install_oh-my-zsh
 install_dotfiles
 
 # If we are on a mac, lets install and setup homebrew
-if [ "$(uname -s)" == "Darwin" ]
+if [[ "$OSTYPE" =~ ^darwin ]]
 then
   user ' - Would you like to set the default OS X preferences? (y/n) '
   read -e reply
@@ -180,5 +179,4 @@ then
 #  fi
 fi
 
-echo ''
-echo '  All installed!'
+printf "\n  All installed!"
