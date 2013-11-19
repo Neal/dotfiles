@@ -24,10 +24,10 @@ if [[ "${URL}" != "login" ]]; then
 		info "Starting download for ${URL_PATH}"
 		STATUS_CODE=$(curl -4 -L -O -C - -b ${COOKIES_LOC} "${URL}" --write-out '%{http_code}')
 		RETURN_CODE=$?
-		if test ${RETURN_CODE} -eq 33; then
+		if [ ${RETURN_CODE} -eq 33 ]; then
 			warn 'Session expired!'
-		elif test ${RETURN_CODE} -ne 0; then
-			if test ${STATUS_CODE} -ne 403; then
+		elif [ ${RETURN_CODE} -ne 0 ]; then
+			if [ ${STATUS_CODE} -ne 403 ]; then
 				fatal "Unexpected error ${STATUS_CODE} (return code ${RETURN_CODE})"
 			fi
 			warn 'Not logged in!'
@@ -56,8 +56,8 @@ fi
 
 info "Starting download for ${URL_PATH}"
 STATUS_CODE=$(curl -4 -L -O -C - -b ${COOKIES_LOC} "${URL}" --write-out '%{http_code}')
-if test $? -ne 0; then
-	if test ${STATUS_CODE} -ne 403; then
+if [ $? -ne 0 ]; then
+	if [ ${STATUS_CODE} -eq 403 ]; then
 		fatal "Unexpected error ${STATUS_CODE}"
 	fi
 	fatal 'Failed to login or not allowed to download.'
