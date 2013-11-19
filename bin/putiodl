@@ -63,7 +63,7 @@ test ! $(which jq) && fatal "jq not found"
 FILEINFO=$(curl -sH 'Accept: application/json' "https://api.put.io/v2/files/${FILEID}?oauth_token=${OAUTH_TOKEN}")
 
 if [[ ${INFO_ONLY} == true ]]; then
-	info "${FILEINFO}"
+	echo "${FILEINFO}"
 	exit 0
 fi
 
@@ -76,7 +76,12 @@ if [[ ${OUTFILELOC} == "" ]]; then
 	[[ ${DLZIP} == true ]] && OUTFILELOC="${OUTFILELOC}.zip"
 fi
 
+
 info "Downloading ${OUTFILELOC}"
-curl -# --location-trusted "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -o ${OUTFILELOC} -C -
+if test ! $(which wget); then
+	curl -# --location-trusted "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -o "${OUTFILELOC}" -C -
+else
+	wget -c --config /dev/null "https://api.put.io/v2/files/${FILEID}/${DL}?oauth_token=${OAUTH_TOKEN}" -O "${OUTFILELOC}"
+fi
 
 exit 0
