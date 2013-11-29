@@ -1,0 +1,9 @@
+# `mou` with no arguments opens the current directory in Mou, otherwise
+# opens the given location
+function mou() {
+	if [ $# -eq 0 ]; then
+		open -a Mou .
+	else
+		open -a Mou "$@"
+	fi
+}
