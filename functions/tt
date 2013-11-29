@@ -1,0 +1,9 @@
+# `tt` with no arguments opens the current directory in Textastic, otherwise
+# opens the given location
+function tt() {
+	if [ $# -eq 0 ]; then
+		open -a Textastic .
+	else
+		open -a Textastic "$@"
+	fi
+}
