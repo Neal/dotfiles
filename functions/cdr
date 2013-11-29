@@ -1,0 +1,6 @@
+# mkdir a random dir and cd to it
+function cdr() {
+	local dir=/tmp/$(cat /dev/urandom | tr -dc 'a-z' | fold -w 32 | head -n 1)
+	mkdir -p $dir
+	cd $dir
+}
