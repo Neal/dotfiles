@@ -50,6 +50,16 @@ function cdf() { # short for `cdfinder`
 	cd "$(osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)')"
 }
 
+# Convert binary plist to xml
+function plxml() {
+	plutil -convert xml1 $1
+}
+
+# Convert xml plist to binary
+function plbin() {
+	plutil -convert binary1 $1
+}
+
 # Gets password from OS X Keychain.
 # $ get-pass github
 function get-pass() {
