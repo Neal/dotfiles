@@ -2,7 +2,7 @@ set -g update-environment "DISPLAY SSH_ASKPASS SSH_AGENT_PID SSH_CONNECTION WIND
 set-environment -g 'SSH_AUTH_SOCK' ~/.ssh/ssh_auth_sock
 
 # Switch me back to ^A, thanks
-set-option -g prefix C-a
+set -g prefix C-a
 unbind-key C-b
 bind-key a send-prefix
 
@@ -12,20 +12,20 @@ bind-key Space next-window
 bind-key C-Space previous-window
 
 # Options
-set-option -sg escape-time 50  # this makes vim fucking awful to use
-set-option -g base-index 1
-set-option -g default-terminal screen-256color
-set-option -g lock-command vlock
-set-window-option -g xterm-keys on  # to make ctrl-arrow, etc. work
+set -sg escape-time 1
+set -g base-index 1
+set -g default-terminal screen-256color
+set -g lock-command vlock
+setw -g xterm-keys on  # to make ctrl-arrow, etc. work
 set -g terminal-overrides 'xterm*:smcup@:rmcup@'
 
-set-option -g set-titles on
-set-option -g set-titles-string '[#S:#I #H] #W'  # use screen title
+set -g set-titles on
+set -g set-titles-string '[#S:#I #H] #W'  # use screen title
 
 # misc settings
 set -g utf8
-set-window-option -g utf8 on
-set-window-option -g automatic-rename on
+setw -g utf8 on
+setw -g automatic-rename on
 set -g mouse-utf8 on
 
 # Ring the bell if any background window rang a bell
@@ -53,51 +53,42 @@ bind M \
     set -g mouse-select-window off \;\
     display 'Mouse: OFF'
 
-# statusbar
+
+## status bar
+# all
+set -g status-fg white
 set -g status-bg colour235
-set -g status-fg colour136
+
+# left
+set -g status-left-attr dim
+set -g status-left "#[fg=green]#H:#S#[default] "
+
+# right
+set -g status-right-attr dim
+set -g status-right "#[fg=blue]#(~/.tmux.bin/users)#[default] :: #[fg=green]up #(~/.tmux.bin/uptime)#[default] :: #[fg=yellow]%d %b %Y %H:%M#[default]"
+
+## window options
 setw -g window-status-fg colour244
 setw -g window-status-bg default
 setw -g window-status-current-fg colour166
 setw -g window-status-current-bg default
 setw -g window-status-current-attr bright,underscore,italics
 setw -g window-status-current-format "#I:#W"
-setw -g window-status-format "#I:#W"
 setw -g window-status-activity-fg colour160
 setw -g window-status-activity-bg default
 setw -g window-status-activity-attr bright
-set-option -g pane-border-fg black
-#set-option -g pane-border-bg colour240
-set-option -g pane-active-border-fg colour240
-#set-option -g pane-active-border-bg colour240
+setw -g window-status-format "#I:#W"
 
-set-option -g status-left-bg colour235
-set-option -g status-left-fg colour136
-set-option -g status-left-attr bright
+# message
+set -g message-fg colour166
+set -g message-bg black
+set -g message-attr bright
 
-set-option -g message-bg black
-set-option -g message-fg colour166
-
-set-option -g display-panes-active-colour colour33
-set-option -g display-panes-colour colour166
-
-set-window-option -g clock-mode-colour colour64
-
-# Notification
-#set-option -g visual-activity on
-set-window-option -g monitor-activity on
+# notifications
+setw -g monitor-activity on
 
 # other
-#set-option -g lock-after-time 1800
-set-window-option -g clock-mode-style 24
-
 set -g default-command zsh
-set -g status-right-length 70
-set -g status-right "#[fg=colour33]#(~/.tmux.bin/users)#[fg=colour230] | #[fg=colour254]Up: #(~/.tmux.bin/uptime)#[fg=colour230] | #[default]%d %b %Y %H:%M"
-set -g status-left-length 14
-
-# Statusbar properties.
-# Update every 10 seconds
 set -g display-time 10000
 
 
@@ -145,14 +136,8 @@ bind-key C-v split-window -h
 bind-key O select-pane -t :.-
 
 
-# Bind appropriate commands similar to screen.
-# lockscreen ^X x 
-unbind ^X
-bind ^X lock-server
-unbind x
-bind x lock-server
-
-# screen ^C c 
+## bind appropriate commands similar to screen.
+# screen ^C c
 unbind ^C
 bind ^C new-window
 unbind c
@@ -162,11 +147,11 @@ bind c new-window
 unbind ^D
 bind ^D detach
 
-# displays * 
+# displays *
 unbind *
 bind * list-clients
 
-# next ^@ ^N sp n 
+# next ^@ ^N sp n
 unbind ^@
 bind ^@ next-window
 unbind ^N
@@ -176,7 +161,7 @@ bind " " next-window
 unbind n
 bind n next-window
 
-# prev ^H ^P p ^? 
+# prev ^H ^P p ^?
 unbind ^H
 bind ^H previous-window
 unbind ^P
@@ -186,23 +171,23 @@ bind p previous-window
 unbind BSpace
 bind BSpace previous-window
 
-# windows ^W w 
+# windows ^W w
 unbind ^W
 bind ^W list-windows
 unbind w
 bind w list-windows
 
-# quit \ 
+# quit \
 unbind '\'
 bind '\' confirm-before "kill-server"
 
-# kill K k 
+# kill K k
 unbind K
 bind K confirm-before "kill-window"
 unbind k
 bind k confirm-before "kill-window"
 
-# redisplay ^L l 
+# redisplay ^L l
 unbind ^L
 bind ^L refresh-client
 unbind l
@@ -220,8 +205,4 @@ bind '"' choose-window
 
 # reload tmux config
 unbind r
-bind r \
-    source-file ~/.tmux.conf \;\
-    display 'Reloaded tmux config.'
-
-
+bind r source-file ~/.tmux.conf \; display 'Reloaded tmux config.'
