@@ -11,22 +11,28 @@ bind-key C-a last-window
 bind-key Space next-window
 bind-key C-Space previous-window
 
-# Options
-set -sg escape-time 1
+# Start numbering windows at 1, not 0
 set -g base-index 1
-set -g default-terminal screen-256color
-set -g lock-command vlock
-setw -g xterm-keys on  # to make ctrl-arrow, etc. work
-set -g terminal-overrides 'xterm*:smcup@:rmcup@'
+set -g pane-base-index 1
 
+# 256 colors
+set -g default-terminal "screen-256color"
+
+# Faster key recognition
+set -sg escape-time 1
+
+# Window titles
 set -g set-titles on
 set -g set-titles-string '[#S:#I #H] #W'  # use screen title
 
-# misc settings
+# Automatically set window title
+setw -g automatic-rename on
+
+# UTF-8
 set -g utf8
 setw -g utf8 on
-setw -g automatic-rename on
 set -g mouse-utf8 on
+set -g status-utf8 on
 
 # Ring the bell if any background window rang a bell
 set -g bell-action any
@@ -72,7 +78,7 @@ setw -g window-status-fg colour244
 setw -g window-status-bg default
 setw -g window-status-current-fg colour166
 setw -g window-status-current-bg default
-setw -g window-status-current-attr bright,underscore,italics
+setw -g window-status-current-attr bright,italics
 setw -g window-status-current-format "#I:#W"
 setw -g window-status-activity-fg colour160
 setw -g window-status-activity-bg default
@@ -115,6 +121,7 @@ bind -t vi-copy v begin-selection
 bind -t vi-copy y copy-selection
 bind -t vi-copy Escape cancel
 
+## Split bindings
 unbind -
 unbind _
 unbind '\'
@@ -124,16 +131,15 @@ unbind C-s
 unbind v
 unbind C-v
 unbind O
-
-bind-key - split-window
-bind-key _ split-window
-bind-key s split-window
-bind-key C-s split-window
-bind-key \ split-window -h
-bind-key | split-window -h
-bind-key v split-window -h
-bind-key C-v split-window -h
-bind-key O select-pane -t :.-
+bind - split-window -v
+bind _ split-window -v
+bind s split-window -v
+bind C-s split-window -v
+bind \ split-window -h
+bind | split-window -h
+bind v split-window -h
+bind C-v split-window -h
+bind O select-pane -t :.-
 
 
 ## bind appropriate commands similar to screen.
