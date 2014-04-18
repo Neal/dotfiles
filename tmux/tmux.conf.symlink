@@ -7,9 +7,9 @@ unbind-key C-b
 bind-key a send-prefix
 
 # I miss ^A^A and ^ASpace
-bind-key C-a last-window
-bind-key Space next-window
-bind-key C-Space previous-window
+bind C-a last-window
+bind Space next-window
+bind BSpace previous-window
 
 # Start numbering windows at 1, not 0
 set -g base-index 1
@@ -111,7 +111,7 @@ bind '~' split-window "exec htop"
 set -g history-limit 10000
 
 # Vim-style copy/paste
-unbind [
+unbind y
 bind y copy-mode
 unbind p
 bind p paste-buffer
@@ -156,26 +156,6 @@ bind ^D detach
 # displays *
 unbind *
 bind * list-clients
-
-# next ^@ ^N sp n
-unbind ^@
-bind ^@ next-window
-unbind ^N
-bind ^N next-window
-unbind " "
-bind " " next-window
-unbind n
-bind n next-window
-
-# prev ^H ^P p ^?
-unbind ^H
-bind ^H previous-window
-unbind ^P
-bind ^P previous-window
-unbind p
-bind p previous-window
-unbind BSpace
-bind BSpace previous-window
 
 # windows ^W w
 unbind ^W
