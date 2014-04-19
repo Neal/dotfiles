@@ -66,10 +66,12 @@ set -g status-fg white
 set -g status-bg colour235
 
 # left
+set -g status-left-length 16
 set -g status-left-attr dim
 set -g status-left "#[fg=green]#H:#S#[default] "
 
 # right
+set -g status-right-length 64
 set -g status-right-attr dim
 set -g status-right "#[fg=blue]#(~/.tmux.bin/users)#[default] :: #[fg=green]up #(~/.tmux.bin/uptime)#[default] :: #[fg=yellow]%d %b %Y %H:%M#[default]"
 
