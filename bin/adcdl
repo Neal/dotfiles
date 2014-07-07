@@ -39,15 +39,15 @@ fi
 
 info 'Logging in to ADC...'
 
-[[ $(curl -4 -s -L "https://developer.apple.com/devcenter/download.action") =~ form[^\>]+action=\"([^\"]+)\" ]] && LOGIN_URL="https://daw.apple.com/${BASH_REMATCH[1]}"
+[ -f ${COOKIES_LOC} ] && rm ${COOKIES_LOC}
+
+[[ $(curl -4 -s -L -c ${COOKIES_LOC} "https://developer.apple.com/downloads/index.action") =~ form[^\>]+action=\"([^\"]+)\" ]] && LOGIN_URL="https://idmsa.apple.com/IDMSWebAuth/${BASH_REMATCH[1]}"
 
 if [ ! "${LOGIN_URL}" ]; then
 	fatal 'Unexpected response received.'
 fi
 
-[ -f ${COOKIES_LOC} ] && rm ${COOKIES_LOC}
-
-curl -4 -s -L -c ${COOKIES_LOC} -F theAccountName="${ADC_USER}" -F theAccountPW="${ADC_PASS}" "${LOGIN_URL}" -o /dev/null
+curl -4 -s -L -b ${COOKIES_LOC} -c ${COOKIES_LOC} -d "appleId=${ADC_USER}&accountPassword=${ADC_PASS}" "${LOGIN_URL}" -o /dev/null
 if ! grep -q myacinfo ${COOKIES_LOC} 2>/dev/null; then
 	fatal 'Failed!'
 fi
