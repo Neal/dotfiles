@@ -73,22 +73,22 @@ set -g status-left "#[fg=green]#H:#S#[default] "
 # right
 set -g status-right-length 64
 set -g status-right-attr dim
-set -g status-right "#[fg=blue]#(~/.tmux.bin/users)#[default] :: #[fg=green]up #(~/.tmux.bin/uptime)#[default] :: #[fg=yellow]%d %b %Y %H:%M#[default]"
+set -g status-right "#[fg=yellow]%d %b %Y %H:%M#[default]"
 
 ## window options
-setw -g window-status-fg colour244
+setw -g window-status-fg gray
 setw -g window-status-bg default
-setw -g window-status-current-fg colour166
+setw -g window-status-current-fg magenta
 setw -g window-status-current-bg default
 setw -g window-status-current-attr bright,italics
 setw -g window-status-current-format "#I:#W"
-setw -g window-status-activity-fg colour160
+setw -g window-status-activity-fg red
 setw -g window-status-activity-bg default
 setw -g window-status-activity-attr bright
 setw -g window-status-format "#I:#W"
 
 # message
-set -g message-fg colour166
+set -g message-fg magenta
 set -g message-bg black
 set -g message-attr bright
 
