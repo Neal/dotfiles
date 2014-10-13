@@ -12,6 +12,9 @@ fi
 typeset -U config_files
 config_files=($DOTFILES/**/*.zsh)
 
+# ignore all files in oh-my-zsh
+config_files=(${config_files:#*/oh-my-zsh/*.zsh})
+
 # load the path files
 for file in ${(M)config_files:#*/path.zsh}
 do

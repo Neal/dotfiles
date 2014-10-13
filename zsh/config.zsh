@@ -1,4 +1,4 @@
-fpath=($DOTFILES/functions $fpath)
+fpath=($DOTFILES/functions /usr/local/share/zsh-completions $fpath)
 
 autoload -U $DOTFILES/functions/*(:t)
 
