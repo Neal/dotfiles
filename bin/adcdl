@@ -19,6 +19,8 @@ ADC_PASS=${LOGIN[1]}
 URL=$(printf "$1" | sed -E 's@http://adcdownload.apple.com|https://developer.apple.com/(iphone|ios)/download.action\?path=@https://developer.apple.com/devcenter/download.action?path=@')
 URL_PATH=$(printf "${URL}" | sed -E 's@https://developer.apple.com/devcenter/download.action\?path=@@')
 
+[ "`find ${COOKIES_LOC} -mmin +30`" ] && rm ${COOKIES_LOC}
+
 if [[ "${URL}" != "login" ]]; then
 	if grep -q myacinfo ${COOKIES_LOC} 2>/dev/null; then
 		info "Starting download for ${URL_PATH}"
