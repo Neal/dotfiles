@@ -76,9 +76,9 @@ set -g status-right-attr dim
 set -g status-right "#[fg=yellow]%d %b %H:%M#[default]"
 
 ## window options
-setw -g window-status-fg gray
+setw -g window-status-fg blue
 setw -g window-status-bg default
-setw -g window-status-current-fg magenta
+setw -g window-status-current-fg blue
 setw -g window-status-current-bg default
 setw -g window-status-current-attr bright,italics
 setw -g window-status-current-format "#I:#W"
@@ -88,8 +88,8 @@ setw -g window-status-activity-attr bright
 setw -g window-status-format "#I:#W"
 
 # message
-set -g message-fg magenta
-set -g message-bg black
+set -g message-fg black
+set -g message-bg magenta
 set -g message-attr bright
 
 # notifications
@@ -97,7 +97,7 @@ setw -g monitor-activity on
 
 # other
 set -g default-command zsh
-set -g display-time 10000
+set -g display-time 2000
 
 
 # open a man page in new window
