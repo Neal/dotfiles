@@ -25,13 +25,13 @@ plugins=(
 	iwhois
 	mosh
 	npm
+	pebble
 	pip
 	python
 	rsync
 	safe-paste
 	screen
 	sudo
-	ssh-agent
 	systemadmin
 	tmux
 	tmuxinator
@@ -52,6 +52,7 @@ if [[ "$OSTYPE" =~ ^darwin ]]; then
 		copydir
 		copyfile
 		osx
+		ssh-agent
 		sublime
 		vagrant
 		xcode
