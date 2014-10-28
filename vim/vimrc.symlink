@@ -102,7 +102,7 @@ set nojoinspaces  " :h joinspaces
 
 " Set the tab width
 let s:tabwidth=4
-exec 'set tabstop='     . s:tabwidth 
+exec 'set tabstop='     . s:tabwidth
 exec 'set shiftwidth='  . s:tabwidth
 exec 'set softtabstop=' . s:tabwidth
 
