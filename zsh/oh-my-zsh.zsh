@@ -11,7 +11,8 @@ plugins=(
 	battery
 	colored-man
 	command-not-found
-	cp encode64
+	cp
+	encode64
 	extract
 	heroku
 	history-substring-search
@@ -33,8 +34,10 @@ plugins=(
 	screen
 	sudo
 	systemadmin
+	t
 	tmux
 	tmuxinator
+	tugboat
 	urltools
 	virtualenv
 	vundle
