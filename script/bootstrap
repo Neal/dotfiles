@@ -151,7 +151,7 @@ then
   read -e reply
   if [[ $reply =~ ^[Yy]$ ]]; then
     info "Setting up OS X preferences, which requires sudo access.\n"
-    $DOTFILES/osx/set-defaults.sh
+    $DOTFILES_ROOT/osx/set-defaults.sh
     info "Note that some of these changes require a logout/restart to take effect.\n"
   fi
 
@@ -160,7 +160,7 @@ then
     read -e reply
     if [[ $reply =~ ^[Yy]$ ]]; then
       info "installing brew"
-      ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+      ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
       if test ! $(which brew); then
         fail "error installing brew"
         exit 1
