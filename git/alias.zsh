@@ -1,4 +1,4 @@
-if test $(which hub)
+if $(hub &>/dev/null)
 then
 	alias git=hub
 fi
