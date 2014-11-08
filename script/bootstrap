@@ -1,182 +1,133 @@
 #!/usr/bin/env bash
-#
-# bootstrap installs things.
 
-DOTFILES_ROOT="$(pwd)"
+cd "$(dirname "$0")/.."
+DOTFILES_ROOT=$(pwd)
 
 set -e
 
-printf "\n"
-
 info () {
-  printf "  [ \033[00;34m..\033[0m ] $1"
+	printf "[ \033[00;34m..\033[0m ] $1"
 }
 
 user () {
-  printf "\r  [ \033[0;33m??\033[0m ] $1 "
+	printf "\r[ \033[0;33m??\033[0m ] $1 "
 }
 
 success () {
-  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
+	printf "\r\033[2K[ \033[00;32mOK\033[0m ] $1\n"
 }
 
 fail () {
-  printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n\n"
-  exit 1
+	printf "\r\033[2K[\033[0;31mFAIL\033[0m] $1\n\n"
+	exit 1
 }
 
-setup_gitconfig () {
-  if ! [ -f git/gitconfig.symlink ]
-  then
-    info 'setup gitconfig'
+link_file () {
+	local src=$1 dst=$2
 
-    user ' - What is your github author name?'
-    read -e git_authorname
-    user ' - What is your github author email?'
-    read -e git_authoremail
+	local overwrite= backup= skip=
+	local action=
 
-    sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" git/gitconfig.symlink.example > git/gitconfig.symlink
+	if [ -f "$dst" -o -d "$dst" -o -L "$dst" ]
+	then
 
-    success 'gitconfig'
-  fi
-}
+		if [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ]
+		then
 
-setup_irssi_config () {
-  if ! [ -f irssi/irssi.symlink/config ]
-  then
-    info 'setup irssiconfig'
+			local currentSrc="$(readlink $dst)"
 
-    user ' - Enter the ZNC Password: '
-    read -s -e znc_password
+			if [ "$currentSrc" == "$src" ]
+			then
 
-    sed -e "s/ZNCPASSWORD/$znc_password/g" irssi/irssi.symlink/config.example > irssi/irssi.symlink/config
+				skip=true;
 
-    success 'irssiconfig'
-  fi
-}
+			else
 
-link_files () {
-  ln -s $1 $2
-  success "linked $1 to $2"
-}
+				user "File already exists: $(basename "$src"), what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
+				read -n 1 action
 
-install_oh-my-zsh () {
-  if [ ! -d ~/.oh-my-zsh ]
-  then
-    info 'Cloning Oh My Zsh'
-    hash git >/dev/null && /usr/bin/env git clone git@github.com:Neal/oh-my-zsh.git ~/.oh-my-zsh || {
-      fail 'git not installed'
-    }
-    success 'oh-my-zsh'
-  fi
-  /usr/bin/env rm -rf ~/.oh-my-zsh/custom/themes && ln -s ~/.dotfiles/oh-my-zsh/themes ~/.oh-my-zsh/custom/themes
+				case "$action" in
+					o )
+						overwrite=true;;
+					O )
+						overwrite_all=true;;
+					b )
+						backup=true;;
+					B )
+						backup_all=true;;
+					s )
+						skip=true;;
+					S )
+						skip_all=true;;
+					* )
+						;;
+				esac
+
+			fi
+
+		fi
+
+		overwrite=${overwrite:-$overwrite_all}
+		backup=${backup:-$backup_all}
+		skip=${skip:-$skip_all}
+
+		if [ "$overwrite" == "true" ]
+		then
+			rm -rf "$dst"
+			success "removed $dst"
+		fi
+
+		if [ "$backup" == "true" ]
+		then
+			mv "$dst" "${dst}.backup"
+			success "moved $dst to ${dst}.backup"
+		fi
+
+		if [ "$skip" == "true" ]
+		then
+			success "skipped $src"
+		fi
+	fi
+
+	if [ "$skip" != "true" ]  # "false" or empty
+	then
+		ln -s "$1" "$2"
+		success "linked $1 to $2"
+	fi
 }
 
 install_dotfiles () {
-  info 'installing dotfiles'
+	local overwrite_all=false backup_all=false skip_all=false
 
-  overwrite_all=false
-  backup_all=false
-  skip_all=false
-
-  for source in `find $DOTFILES_ROOT -maxdepth 2 -name \*.symlink`
-  do
-    dest="$HOME/.`basename \"${source%.*}\"`"
-
-    if [ -f $dest ] || [ -d $dest ]
-    then
-
-      overwrite=false
-      backup=false
-      skip=false
-
-      if [ "$overwrite_all" == "false" ] && [ "$backup_all" == "false" ] && [ "$skip_all" == "false" ]
-      then
-        user "File already exists: `basename $source`, what do you want to do? [s]kip, [S]kip all, [o]verwrite, [O]verwrite all, [b]ackup, [B]ackup all?"
-        read -n 1 action
-
-        case "$action" in
-          o )
-            overwrite=true;;
-          O )
-            overwrite_all=true;;
-          b )
-            backup=true;;
-          B )
-            backup_all=true;;
-          s )
-            skip=true;;
-          S )
-            skip_all=true;;
-          * )
-            ;;
-        esac
-      fi
-
-      if [ "$overwrite" == "true" ] || [ "$overwrite_all" == "true" ]
-      then
-        rm -rf $dest
-        success "removed $dest"
-      fi
-
-      if [ "$backup" == "true" ] || [ "$backup_all" == "true" ]
-      then
-        mv $dest $dest\.backup
-        success "moved $dest to $dest.backup"
-      fi
-
-      if [ "$skip" == "false" ] && [ "$skip_all" == "false" ]
-      then
-        link_files $source $dest
-      else
-        success "skipped $source"
-      fi
-
-    else
-      link_files $source $dest
-    fi
-
-  done
+	for src in $(find "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink')
+	do
+		dst="$HOME/.$(basename "${src%.*}")"
+		link_file "$src" "$dst"
+	done
 }
 
-setup_gitconfig
-setup_irssi_config
-install_oh-my-zsh
+update_submodules () {
+	info 'updating git submodules'
+	git submodule init &> /dev/null
+	git submodule update &> /dev/null
+	git submodule foreach git pull &> /dev/null
+	success 'git submodules updated'
+}
+
+update_submodules
 install_dotfiles
 
-# If we are on a mac, lets install and setup homebrew
-if [[ "$OSTYPE" =~ ^darwin ]]
+# If we're on a Mac, let's install and setup homebrew.
+if [ "$(uname -s)" == "Darwin" ]
 then
-  user ' - Would you like to set the default OS X preferences? (y/n) '
-  read -e reply
-  if [[ $reply =~ ^[Yy]$ ]]; then
-    info "Setting up OS X preferences, which requires sudo access.\n"
-    $DOTFILES/osx/set-defaults.sh
-    info "Note that some of these changes require a logout/restart to take effect.\n"
-  fi
-
-  if test ! $(which brew); then
-    user ' - Homebrew is not installed! Would you like to install it? (y/n) '
-    read -e reply
-    if [[ $reply =~ ^[Yy]$ ]]; then
-      info "installing brew"
-      ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
-      if test ! $(which brew); then
-        fail "error installing brew"
-        exit 1
-      else
-        success "brew installed"
-      fi
-    fi
-  fi
-
-#  info "installing dependencies"
-#  if . bin/dot > /tmp/dotfiles-dot 2>&1
-#  then
-#    success "dependencies installed"
-#  else
-#    fail "error installing dependencies"
-#  fi
+	if test ! $(which brew)
+	then
+		info "installing homebrew"
+		if ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" > /tmp/homebrew-install.log 2>&1
+		then
+			success "homebrew installed"
+		else
+			fail "error installing homebrew"
+		fi
+	fi
 fi
-
-printf "\n  All installed!"
