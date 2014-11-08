@@ -110,6 +110,7 @@ update_submodules () {
 	info 'updating git submodules'
 	git submodule init &> /dev/null
 	git submodule update &> /dev/null
+	git submodule foreach git checkout master &> /dev/null
 	git submodule foreach git pull &> /dev/null
 	success 'git submodules updated'
 }
@@ -117,7 +118,7 @@ update_submodules () {
 update_submodules
 install_dotfiles
 
-# If we're on a Mac, let's install and setup homebrew.
+# If we're on a Mac, let's install and setup Homebrew.
 if [ "$(uname -s)" == "Darwin" ]
 then
 	if test ! $(which brew)
