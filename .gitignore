@@ -1,2 +1,3 @@
 git/gitconfig.symlink
 irssi/irssi.symlink/config
+vim/vim.symlink/undodir
