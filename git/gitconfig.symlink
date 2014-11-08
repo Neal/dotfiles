@@ -1,0 +1,134 @@
+[user]
+	name = Neal Patel
+	email = neal@ineal.me
+
+[credential]
+	helper = osxkeychain
+
+[alias]
+	# View the SHA, description, and history graph of the latest 20 commits
+	l = log --pretty=oneline --graph
+
+	# View the current working tree status using the short format
+	s = status -s
+
+	# Show the diff between the latest commit and the current state
+	d = !"git diff-index --quiet HEAD -- || git diff --patch-with-stat"
+
+	# `git di $number` shows the diff between the state `$number` revisions ago and the current state
+	di = !"d() { git diff --patch-with-stat HEAD~$1; }; git diff-index --quiet HEAD -- || d"
+
+	# Pull in remote changes for the current repository and all its submodules
+	p = !"git pull; git submodule foreach git pull origin master"
+
+	# Clone a repository including all submodules
+	c = clone --recursive
+
+	# Commit all changes
+	ca = !git add -A && git commit -av
+
+	# Switch to a branch, creating it if necessary
+	go = checkout -B
+
+	# Show verbose output about tags, branches or remotes
+	tags = tag -l
+
+	branches = branch -a
+	remotes = remote -v
+
+	# Credit an author on the latest commit
+	credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+
+	# Interactive rebase with the given number of latest commits
+	reb = "!r() { git rebase -i HEAD~$1; }; r"
+
+	# Undo a `git push`
+	undopush = push -f origin HEAD^:master
+
+	# Checkout is too long
+	co = checkout
+
+	st = status
+	ci = commit --verbose
+	staged = diff --cached
+	unstaged = diff
+	list-staged = diff --staged --name-only
+	list-unstaged = diff --name-only
+	oneline = log --pretty=oneline
+	unstage = reset HEAD
+	rollback = checkout --
+	sub-up = submodule update --init --recursive
+	ff = merge --ff-only
+	delete = push --delete
+
+[apply]
+	# Detect whitespace errors when applying a patch
+	whitespace = fix
+
+[core]
+	# Use custom `.gitignore` and `.gitattributes`
+	excludesfile = ~/.gitignore
+	attributesfile = ~/.gitattributes
+	# Treat spaces before tabs, lines that are indented with 8 or more spaces, and all kinds of trailing whitespace as an error
+	whitespace = space-before-tab,indent-with-non-tab,trailing-space
+	# Make the default editor vim!
+	editor = vim
+
+[color]
+	ui = true
+[color "branch"]
+	current = yellow reverse
+	local = yellow
+	remote = green
+[color "diff"]
+	meta = yellow bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+[color "status"]
+	added = yellow
+	changed = green
+	untracked = cyan
+
+[merge]
+	# Include summaries of merged commits in newly created merge commit messages
+	log = true
+
+[mergetool]
+	keepBackup = false
+
+[difftool]
+	prompt = false
+
+[help]
+	autocorrect = 1
+
+# Use `origin` as the default remote on the `master` branch in all cases
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+
+# URL shorthands
+[url "git@github.com:"]
+	insteadOf = "gh:"
+	pushInsteadOf = "github:"
+	pushInsteadOf = "git://github.com/"
+[url "git://github.com/"]
+	insteadOf = "github:"
+[url "git@gist.github.com:"]
+	insteadOf = "gst:"
+	pushInsteadOf = "gist:"
+	pushInsteadOf = "git://gist.github.com/"
+[url "git://gist.github.com/"]
+	insteadOf = "gist:"
+
+[push]
+	default = matching
+
+[filter "media"]
+	clean = git-media-clean %f
+	smudge = git-media-smudge %f
+
+[filter "tabspace"]
+	smudge = gunexpand --tabs=4 --first-only
+	clean = gexpand --tabs=4 --initial
