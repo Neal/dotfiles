@@ -54,6 +54,7 @@ if [[ "$OSTYPE" =~ ^darwin ]]; then
 		cloudapp
 		copydir
 		copyfile
+		hub
 		osx
 		ssh-agent
 		sublime
