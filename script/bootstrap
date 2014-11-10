@@ -106,16 +106,30 @@ install_dotfiles () {
 	done
 }
 
+install_ohmyzsh () {
+	if [ ! -d ~/.oh-my-zsh ]
+	then
+		info 'cloning oh-my-zsh'
+		hash git >/dev/null && /usr/bin/env git clone https://github.com/Neal/oh-my-zsh.git ~/.oh-my-zsh || {
+			fail 'git not installed'
+		}
+		success 'oh-my-zsh'
+	fi
+	/usr/bin/env rm -rf ~/.oh-my-zsh/custom/plugins && ln -s ~/.dotfiles/oh-my-zsh/plugins ~/.oh-my-zsh/custom/plugins
+	/usr/bin/env rm -rf ~/.oh-my-zsh/custom/themes && ln -s ~/.dotfiles/oh-my-zsh/themes ~/.oh-my-zsh/custom/themes
+}
+
 update_submodules () {
 	info 'updating git submodules'
-	git submodule init &> /dev/null
-	git submodule update &> /dev/null
-	git submodule foreach git checkout master &> /dev/null
-	git submodule foreach git pull &> /dev/null
+	/usr/bin/env git submodule init &> /dev/null
+	/usr/bin/env git submodule update &> /dev/null
+	/usr/bin/env git submodule foreach git checkout master &> /dev/null
+	/usr/bin/env git submodule foreach git pull &> /dev/null
 	success 'git submodules updated'
 }
 
 update_submodules
+install_ohmyzsh
 install_dotfiles
 
 # If we're on a Mac, let's install and setup Homebrew.
