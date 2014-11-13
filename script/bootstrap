@@ -115,8 +115,6 @@ install_ohmyzsh () {
 		}
 		success 'oh-my-zsh'
 	fi
-	/usr/bin/env rm -rf ~/.oh-my-zsh/custom/plugins && ln -s ~/.dotfiles/oh-my-zsh/plugins ~/.oh-my-zsh/custom/plugins
-	/usr/bin/env rm -rf ~/.oh-my-zsh/custom/themes && ln -s ~/.dotfiles/oh-my-zsh/themes ~/.oh-my-zsh/custom/themes
 }
 
 update_submodules () {
