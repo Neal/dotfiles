@@ -1,4 +1,12 @@
-fpath=($DOTFILES/functions /usr/local/share/zsh-completions /usr/share/zsh/site-functions $fpath)
+fpath=($DOTFILES/functions $fpath)
+
+if [[ -d "/usr/local/share/zsh-completions" ]]; then
+	fpath=(/usr/local/share/zsh-completions $fpath)
+fi
+
+if [[ -d "/usr/share/zsh/site-functions" ]]; then
+	fpath=(/usr/share/zsh/site-functions $fpath)
+fi
 
 autoload -U $DOTFILES/functions/*(:t)
 
