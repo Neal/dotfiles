@@ -48,6 +48,15 @@ alias emptytrash='sudo rm -rfv /Volumes/*/.Trashes/*; sudo rm -rfv ~/.Trash/*; s
 # (useful when executing time-consuming commands)
 alias badge='tput bel'
 
+# Flush Directory Service cache
+alias flush="dscacheutil -flushcache && killall -HUP mDNSResponder"
+
+# Clean up LaunchServices to remove duplicates in the “Open With” menu
+alias lscleanup="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder"
+
+# Put display to sleep
+alias afk='pmset displaysleepnow'
+
 # Change working directory and open editor
 function cded() {
 	cd $1
