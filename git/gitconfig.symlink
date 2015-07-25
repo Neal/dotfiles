@@ -69,22 +69,25 @@
 	# Use custom `.gitignore` and `.gitattributes`
 	excludesfile = ~/.gitignore
 	attributesfile = ~/.gitattributes
-	# Treat spaces before tabs, lines that are indented with 8 or more spaces, and all kinds of trailing whitespace as an error
-	whitespace = space-before-tab,indent-with-non-tab,trailing-space
+	# Treat trailing whitespace as an error
+	whitespace = trailing-space
 	# Make the default editor vim!
 	editor = vim
 
 [color]
 	ui = true
+
 [color "branch"]
 	current = yellow reverse
 	local = yellow
 	remote = green
+
 [color "diff"]
 	meta = yellow bold
 	frag = magenta bold
 	old = red bold
 	new = green bold
+
 [color "status"]
 	added = yellow
 	changed = green
@@ -129,6 +132,8 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 
-[filter "tabspace"]
-	smudge = gunexpand --tabs=4 --first-only
-	clean = gexpand --tabs=4 --initial
+#[filter "tabspace"]
+#	smudge = gunexpand --tabs=4 --first-only
+#	clean = gexpand --tabs=4 --initial
+[rerere]
+	enabled = true
