@@ -3,79 +3,111 @@
 #
 # zsh-async
 #
-# version: 0.2.3
+# version: 1.1.0
 # author: Mathias Fredriksson
 # url: https://github.com/mafredri/zsh-async
 #
 
 # Wrapper for jobs executed by the async worker, gives output in parseable format with execution time
 _async_job() {
-	# store start time
-	local start=$EPOCHREALTIME
+  # Store start time as double precision (+E disables scientific notation)
+  float -F duration=$EPOCHREALTIME
 
-	# run the command
-	local out
-	out=$(eval "$@" 2>&1)
-	local ret=$?
+  # Run the command
+  #
+  # What is happening here is that we are assigning stdout, stderr and ret to
+  # variables, and then we are printing out the variable assignment through
+  # typeset -p. This way when we run eval we get something along the lines of:
+  #   eval "
+  #     typeset stdout=' M async.test.sh\n M async.zsh'
+  #     typeset ret=0
+  #     typeset stderr=''
+  #   "
+  unset stdout stderr ret
+  eval "$(
+    {
+      stdout=$(eval "$@")
+      ret=$?
+      typeset -p stdout ret
+    } 2> >(stderr=$(cat); typeset -p stderr)
+  )"
 
-	# Grab mutex lock
-	read -ep >/dev/null
+  # Calculate duration
+  duration=$(( EPOCHREALTIME - duration ))
 
-	# return output (<job_name> <return_code> <output> <duration>)
-	print -r -N -n -- "$1" "$ret" "$out" $(( $EPOCHREALTIME - $start ))$'\0'
+  # stip all null-characters from stdout and stderr
+  stdout=${stdout//$'\0'/}
+  stderr=${stderr//$'\0'/}
 
-	# Unlock mutex
-	print -p "t"
+  # if ret is missing for some unknown reason, set it to -1 to indicate we
+  # have run into a bug
+  ret=${ret:--1}
+
+  # Grab mutex lock
+  read -ep >/dev/null
+
+  # return output (<job_name> <return_code> <stdout> <duration> <stderr>)
+  print -r -N -n -- "$1" "$ret" "$stdout" "$duration" "$stderr"$'\0'
+
+  # Unlock mutex
+  print -p "t"
 }
 
 # The background worker manages all tasks and runs them without interfering with other processes
 _async_worker() {
-	local -A storage
-	local unique=0
+  local -A storage
+  local unique=0
 
-	# Process option parameters passed to worker
-	while getopts "np:u" opt; do
-		case "$opt" in
-		# Use SIGWINCH since many others seem to cause zsh to freeze, e.g. ALRM, INFO, etc.
-		n) trap 'kill -WINCH $ASYNC_WORKER_PARENT_PID' CHLD;;
-		p) ASYNC_WORKER_PARENT_PID=$OPTARG;;
-		u) unique=1;;
-		esac
-	done
+  # Process option parameters passed to worker
+  while getopts "np:u" opt; do
+    case $opt in
+      # Use SIGWINCH since many others seem to cause zsh to freeze, e.g. ALRM, INFO, etc.
+      n) trap 'kill -WINCH $ASYNC_WORKER_PARENT_PID' CHLD;;
+      p) ASYNC_WORKER_PARENT_PID=$OPTARG;;
+      u) unique=1;;
+    esac
+  done
 
-	# Create a mutex for writing to the terminal through coproc
-	coproc cat
-	# Insert token into coproc
-	print -p "t"
+  # Create a mutex for writing to the terminal through coproc
+  coproc cat
+  # Insert token into coproc
+  print -p "t"
 
-	while read -r cmd; do
-		# Separate on spaces into an array
-		cmd=(${=cmd})
-		local job=$cmd[1]
+  while read -r cmd; do
+    # Separate on spaces into an array
+    cmd=(${=cmd})
+    local job=$cmd[1]
 
-		# Check for non-job commands sent to worker
-		case "$job" in
-		_killjobs)
-			kill -KILL ${${(v)jobstates##*:*:}%\=*} &>/dev/null
-			continue
-			;;
-		esac
+    # Check for non-job commands sent to worker
+    case $job in
+      _unset_trap)
+        trap - CHLD; continue;;
+      _killjobs)
+        # Do nothing in the worker when receiving the TERM signal
+        trap '' TERM
+        # Send TERM to the entire process group (PID and all children)
+        kill -TERM -$$ &>/dev/null
+        # Reset trap
+        trap - TERM
+        continue
+        ;;
+    esac
 
-		# If worker should perform unique jobs
-		if ((unique)); then
-			# Check if a previous job is still running, if yes, let it finnish
-			for pid in ${${(v)jobstates##*:*:}%\=*}; do
-				if [[ "${storage[$job]}" == "$pid" ]]; then
-					continue 2
-				fi
-			done
-		fi
+    # If worker should perform unique jobs
+    if (( unique )); then
+      # Check if a previous job is still running, if yes, let it finnish
+      for pid in ${${(v)jobstates##*:*:}%\=*}; do
+        if [[ ${storage[$job]} == $pid ]]; then
+          continue 2
+        fi
+      done
+    fi
 
-		# run task in background
-		_async_job $cmd &
-		# store pid because zsh job manager is extremely unflexible (show jobname as non-unique '$job')...
-		storage[$job]=$!
-	done
+    # Run task in background
+    _async_job $cmd &
+    # Store pid because zsh job manager is extremely unflexible (show jobname as non-unique '$job')...
+    storage[$job]=$!
+  done
 }
 
 #
@@ -83,68 +115,87 @@ _async_worker() {
 #  job name, return code, output and execution time and with minimal effort.
 #
 # usage:
-# 	async_process_results <worker_name> <callback_function>
+#   async_process_results <worker_name> <callback_function>
 #
 # callback_function is called with the following parameters:
-# 	$1 = job name, e.g. the function passed to async_job
-# 	$2 = return code
-# 	$3 = resulting output from execution
-# 	$4 = execution time, floating point e.g. 2.05 seconds
+#   $1 = job name, e.g. the function passed to async_job
+#   $2 = return code
+#   $3 = resulting stdout from execution
+#   $4 = execution time, floating point e.g. 2.05 seconds
+#   $5 = resulting stderr from execution
 #
 async_process_results() {
-	integer count=0
-	local worker=$1
-	local callback=$2
-	local -a items
-	local IFS=$'\0'
+  setopt localoptions noshwordsplit
 
-	typeset -gA ASYNC_PROCESS_BUFFER
-	# Read output from zpty and parse it if available
-	while zpty -rt "$worker" line 2>/dev/null; do
-		# Remove unwanted \r from output
-		ASYNC_PROCESS_BUFFER[$1]+=${line//$'\r'$'\n'/$'\n'}
-		# Split buffer on null characters, preserve empty elements
-		items=("${(@)=ASYNC_PROCESS_BUFFER[$1]}")
-		# Remove last element since it's due to the return string separator structure
-		items=("${(@)items[1,${#items}-1]}")
+  integer count=0
+  local worker=$1
+  local callback=$2
+  local -a items
+  local IFS=$'\0'
 
-		# Continue until we receive all information
-		(( ${#items} % 4 )) && continue
+  typeset -gA ASYNC_PROCESS_BUFFER
+  # Read output from zpty and parse it if available
+  while zpty -rt $worker line 2>/dev/null; do
+    # Remove unwanted \r from output
+    ASYNC_PROCESS_BUFFER[$worker]+=${line//$'\r'$'\n'/$'\n'}
+    # Split buffer on null characters, preserve empty elements
+    items=("${(@)=ASYNC_PROCESS_BUFFER[$worker]}")
+    # Remove last element since it's due to the return string separator structure
+    items=("${(@)items[1,${#items}-1]}")
 
-		# Work through all results
-		while (( ${#items} > 0 )); do
-			"$callback" "${(@)=items[1,4]}"
-			shift 4 items
-			count+=1
-		done
+    # Continue until we receive all information
+    (( ${#items} % 5 )) && continue
 
-		# Empty the buffer
-		ASYNC_PROCESS_BUFFER[$1]=""
-	done
+    # Work through all results
+    while (( ${#items} > 0 )); do
+      $callback "${(@)=items[1,5]}"
+      shift 5 items
+      count+=1
+    done
 
-	# If we processed any results, return success
-	(( $count )) && return 0
+    # Empty the buffer
+    unset "ASYNC_PROCESS_BUFFER[$worker]"
+  done
 
-	# No results were processed
-	return 1
+  # If we processed any results, return success
+  (( count )) && return 0
+
+  # No results were processed
+  return 1
+}
+
+# Watch worker for output
+_async_zle_watcher() {
+  setopt localoptions noshwordsplit
+  typeset -gA ASYNC_PTYS ASYNC_CALLBACKS
+  local worker=$ASYNC_PTYS[$1]
+  local callback=$ASYNC_CALLBACKS[$worker]
+
+  if [[ -n $callback ]]; then
+    async_process_results $worker $callback
+  fi
 }
 
 #
 # Start a new asynchronous job on specified worker, assumes the worker is running.
 #
 # usage:
-# 	async_job <worker_name> <my_function> [<function_params>]
+#   async_job <worker_name> <my_function> [<function_params>]
 #
 async_job() {
-	local worker=$1; shift
-	zpty -w "$worker" "$@"
+  setopt localoptions noshwordsplit
+
+  local worker=$1; shift
+  zpty -w $worker $@
 }
 
 # This function traps notification signals and calls all registered callbacks
 _async_notify_trap() {
-	for k in ${(k)ASYNC_CALLBACKS}; do
-		async_process_results "${k}" "${ASYNC_CALLBACKS[$k]}"
-	done
+  setopt localoptions noshwordsplit
+
+  for k in ${(k)ASYNC_CALLBACKS}; do
+    async_process_results $k ${ASYNC_CALLBACKS[$k]}
+  done
 }
 
 #
@@ -152,27 +203,31 @@ _async_notify_trap() {
 # specified callback function. This requires that a worker is initialized with the -n (notify) option.
 #
 # usage:
-# 	async_register_callback <worker_name> <callback_function>
+#   async_register_callback <worker_name> <callback_function>
 #
 async_register_callback() {
-	typeset -gA ASYNC_CALLBACKS
-	local worker=$1; shift
+  setopt localoptions noshwordsplit nolocaltraps
 
-	ASYNC_CALLBACKS[$worker]="$*"
+  typeset -gA ASYNC_CALLBACKS
+  local worker=$1; shift
 
-	trap '_async_notify_trap' WINCH
+  ASYNC_CALLBACKS[$worker]="$*"
+
+  if (( ! ASYNC_USE_ZLE_HANDLER )); then
+    trap '_async_notify_trap' WINCH
+  fi
 }
 
 #
 # Unregister the callback for a specific worker.
 #
 # usage:
-# 	async_unregister_callback <worker_name>
+#   async_unregister_callback <worker_name>
 #
 async_unregister_callback() {
-	typeset -gA ASYNC_CALLBACKS
+  typeset -gA ASYNC_CALLBACKS
 
-	unset "ASYNC_CALLBACKS[$1]"
+  unset "ASYNC_CALLBACKS[$1]"
 }
 
 #
@@ -180,23 +235,25 @@ async_unregister_callback() {
 # with caution.
 #
 # usage:
-# 	async_flush_jobs <worker_name>
+#   async_flush_jobs <worker_name>
 #
 async_flush_jobs() {
-	local worker=$1; shift
+  setopt localoptions noshwordsplit
 
-	# Check if the worker exists
-	zpty -t "$worker" &>/dev/null || return 1
+  local worker=$1; shift
 
-	# Send kill command to worker
-	zpty -w "$worker" "_killjobs"
+  # Check if the worker exists
+  zpty -t $worker &>/dev/null || return 1
 
-	# Clear all output buffers
-	while zpty -r "$worker" line; do true; done
+  # Send kill command to worker
+  zpty -w $worker "_killjobs"
 
-	# Clear any partial buffers
-	typeset -gA ASYNC_PROCESS_BUFFER
-	ASYNC_PROCESS_BUFFER[$1]=""
+  # Clear all output buffers
+  while zpty -r $worker line; do true; done
+
+  # Clear any partial buffers
+  typeset -gA ASYNC_PROCESS_BUFFER
+  unset "ASYNC_PROCESS_BUFFER[$worker]"
 }
 
 #
@@ -204,47 +261,85 @@ async_flush_jobs() {
 # process when tasks are complete.
 #
 # usage:
-# 	async_start_worker <worker_name> [-u] [-n] [-p <pid>]
+#   async_start_worker <worker_name> [-u] [-n] [-p <pid>]
 #
 # opts:
-# 	-u unique (only unique job names can run)
-# 	-n notify through SIGWINCH signal
-# 	-p pid to notify (defaults to current pid)
+#   -u unique (only unique job names can run)
+#   -n notify through SIGWINCH signal
+#   -p pid to notify (defaults to current pid)
 #
 async_start_worker() {
-	local worker=$1; shift
-	zpty -t "$worker" &>/dev/null || zpty -b "$worker" _async_worker -p $$ "$@" || async_stop_worker "$worker"
+  setopt localoptions noshwordsplit
+
+  local worker=$1; shift
+  zpty -t $worker &>/dev/null && return
+
+  typeset -gA ASYNC_PTYS
+  typeset -h REPLY
+  zpty -b $worker _async_worker -p $$ $@ || {
+    async_stop_worker $worker
+    return 1
+  }
+
+  if (( ASYNC_USE_ZLE_HANDLER )); then
+    ASYNC_PTYS[$REPLY]=$worker
+    zle -F $REPLY _async_zle_watcher
+
+    # If worker was called with -n, disable trap in favor of zle handler
+    async_job $worker _unset_trap
+  fi
 }
 
 #
 # Stop one or multiple workers that are running, all unfetched and incomplete work will be lost.
 #
 # usage:
-# 	async_stop_worker <worker_name_1> [<worker_name_2>]
+#   async_stop_worker <worker_name_1> [<worker_name_2>]
 #
 async_stop_worker() {
-	local ret=0
-	for worker in "$@"; do
-		async_unregister_callback "$worker"
-		zpty -d "$worker" 2>/dev/null || ret=$?
-	done
+  setopt localoptions noshwordsplit
 
-	return $ret
+  local ret=0
+  for worker in $@; do
+    # Find and unregister the zle handler for the worker
+    for k v in ${(@kv)ASYNC_PTYS}; do
+      if [[ $v == $worker ]]; then
+        zle -F $k
+        unset "ASYNC_PTYS[$k]"
+      fi
+    done
+    async_unregister_callback $worker
+    zpty -d $worker 2>/dev/null || ret=$?
+  done
+
+  return $ret
 }
 
 #
 # Initialize the required modules for zsh-async. To be called before using the zsh-async library.
 #
 # usage:
-# 	async_init
+#   async_init
 #
 async_init() {
-	zmodload zsh/zpty
-	zmodload zsh/datetime
+  (( ASYNC_INIT_DONE )) && return
+  ASYNC_INIT_DONE=1
+
+  zmodload zsh/zpty
+  zmodload zsh/datetime
+
+  # Check if zsh/zpty returns a file descriptor or not, shell must also be interactive
+  ASYNC_USE_ZLE_HANDLER=0
+  [[ -o interactive ]] && {
+    typeset -h REPLY
+    zpty _async_test cat
+    (( REPLY )) && ASYNC_USE_ZLE_HANDLER=1
+    zpty -d _async_test
+  }
 }
 
 async() {
-	async_init
+  async_init
 }
 
 async "$@"
