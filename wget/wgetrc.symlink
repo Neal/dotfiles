@@ -30,3 +30,6 @@ robots = off
 
 # Print the HTTP and FTP server responses
 server_response = on
+
+# Avoid ugly filenames if the Content-Disposition header exists
+content_disposition = on
