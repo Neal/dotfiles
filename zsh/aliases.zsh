@@ -27,3 +27,7 @@ alias httpdump="sudo tcpdump -i en0 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET
 
 # Canonical hex dump; some systems have this symlinked
 alias hd='hexdump -C'
+
+# Change case
+alias lowercase='tr "[[:upper:]]" "[[:lower:]]"'
+alias uppercase='tr "[[:lower:]]" "[[:upper:]]"'
