@@ -1,6 +1,0 @@
-[submodule "oh-my-zsh/plugins/zsh-syntax-highlighting"]
-	path = oh-my-zsh/plugins/zsh-syntax-highlighting
-	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
-[submodule "oh-my-zsh/plugins/pebble"]
-	path = oh-my-zsh/plugins/pebble
-	url = https://github.com/Neal/pebble-zsh-completion.git
