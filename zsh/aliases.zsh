@@ -1,3 +1,14 @@
+alias -g ...='../..'
+alias -g ....='../../..'
+alias -g .....='../../../..'
+alias -g ......='../../../../..'
+
+# List directory contents
+alias lsa='ls -lah'
+alias l='ls -lah'
+alias ll='ls -lh'
+alias la='ls -lAh'
+
 # reload the zsh config
 alias reload!='. ~/.zshrc'
 
@@ -12,6 +23,9 @@ alias mkd='mkdir -p "$@" && cd "$@"'
 
 # Get week number
 alias week='date +%V'
+
+# Get timestamp in ms
+alias ms='gdate +%s%3N'
 
 # Stopwatch
 alias timer='echo "Timer started. Stop with Ctrl-D." && date && time cat && date'
