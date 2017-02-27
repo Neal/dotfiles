@@ -1,9 +1,5 @@
-# OSX-only aliases. Abort if not OSX.
+# Abort if not OS X
 [[ "$OSTYPE" =~ ^darwin ]] || return 1
-
-# Short-cuts for copy-paste.
-alias c='tr -d '\n' | pbcopy'
-alias p='pbpaste'
 
 # Remove all items safely, to Trash.
 alias rm='trash'
@@ -42,11 +38,6 @@ alias lscleanup="/System/Library/Frameworks/CoreServices.framework/Frameworks/La
 # Put display to sleep
 alias afk='pmset displaysleepnow'
 
-# Change working directory to the top-most Finder window location
-function cdf() { # short for `cdfinder`
-	cd "$(osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)')"
-}
-
 # Convert binary plist to xml
 function plxml() {
 	plutil -convert xml1 $1
@@ -55,11 +46,4 @@ function plxml() {
 # Convert xml plist to binary
 function plbin() {
 	plutil -convert binary1 $1
-}
-
-# Gets password from OS X Keychain.
-# $ get-pass github
-function get-pass() {
-	keychain="$HOME/Library/Keychains/login.keychain"
-	security -q find-generic-password -g -l $@ $keychain 2>&1 | awk -F\" '/password:/ {print $2}';
 }

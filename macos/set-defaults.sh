@@ -13,6 +13,54 @@ sudo -v
 # Keep-alive: update existing `sudo` time stamp until `.osx` has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+
+
+
+# Disable press-and-hold for keys in favor of key repeat.
+defaults write -g ApplePressAndHoldEnabled -bool false
+
+# Use AirDrop over every interface. srsly this should be a default.
+defaults write com.apple.NetworkBrowser BrowseAllInterfaces 1
+
+# Always open everything in Finder's column view. This is important.
+defaults write com.apple.Finder FXPreferredViewStyle clmv
+
+# Show the ~/Library folder.
+chflags nohidden ~/Library
+
+
+defaults write com.apple.dock autohide -int 1
+defaults write com.apple.dock largesize -int 60
+defaults write com.apple.dock magnification -int 1
+defaults write com.apple.dock mod-count -int 277 # magnification
+defaults write com.apple.dock mru-spaces -int 0
+defaults write com.apple.dock showAppExposeGestureEnabled -int 1
+defaults write com.apple.dock tilesize -int 40
+defaults write com.apple.dock trash-full -int 1
+defaults write com.apple.dock wvous-bl-corner -int 10
+defaults write com.apple.dock wvous-bl-modifier -int 0
+defaults write com.apple.dock wvous-br-corner -int 4
+defaults write com.apple.dock wvous-br-modifier -int 0
+defaults write com.apple.dock wvous-tl-corner -int 5
+defaults write com.apple.dock wvous-tl-modifier -int 0
+
+
+
+defaults write NSGlobalDomain AKDeviceUnlockState -int 0
+defaults write NSGlobalDomain AppleActionOnDoubleClick -string "Maximize"
+defaults write NSGlobalDomain AppleAntiAliasingThreshold -int 4
+defaults write NSGlobalDomain AppleAquaColorVariant -int 6
+defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
+defaults write NSGlobalDomain AppleMiniaturizeOnDoubleClick -int 0
+defaults write NSGlobalDomain AppleShowAllExtensions -int 1
+defaults write NSGlobalDomain AppleSpacesSwitchOnActivate -int 0
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
+defaults write NSGlobalDomain KeyRepeat -int 0
+
+
+
+
+
 ###############################################################################
 # General UI/UX                                                               #
 ###############################################################################
@@ -117,7 +165,7 @@ defaults write com.apple.BezelServices kDimTime -int 300
 # Set language and text formats
 # Note: if you’re in the US, replace `EUR` with `USD`, `Centimeters` with
 # `Inches`, `en_GB` with `en_US`, and `true` with `false`.
-defaults write NSGlobalDomain AppleLanguages -array "en" "nl" "ja" "fr" "de" "es" "it" "pt" "sv" "nb" "da" "fi" "ru" "pl" "ko" "ar" "cs" "hu" "tr" "th" "ca" "hr" "el" "hr" "ro" "sk" "uk" 
+defaults write NSGlobalDomain AppleLanguages -array "en" "nl" "ja" "fr" "de" "es" "it" "pt" "sv" "nb" "da" "fi" "ru" "pl" "ko" "ar" "cs" "hu" "tr" "th" "ca" "hr" "el" "hr" "ro" "sk" "uk"
 defaults write NSGlobalDomain AppleLocale -string "en_US@currency=USD"
 defaults write NSGlobalDomain AppleMeasurementUnits -string "Inches"
 defaults write NSGlobalDomain AppleMetricUnits -bool false
