@@ -22,7 +22,6 @@ zstyle ':prezto:*:*' color 'yes'
 # The order matters.
 zstyle ':prezto:load' pmodule \
   'autosuggestions' \
-  'base64' \
   'fasd' \
   'git' \
   'gpg' \
@@ -75,12 +74,10 @@ zstyle ':prezto:module:prompt' theme 'pure'
 # Set syntax highlighters.
 # By default, only the main highlighter is enabled.
 zstyle ':prezto:module:syntax-highlighting' highlighters \
-  'main' \
   'brackets' \
-  'pattern' \
-  'line' \
   'cursor' \
-  'root'
+  'line' \
+  'main'
 
 #
 # Terminal
@@ -94,3 +91,10 @@ zstyle ':prezto:module:terminal:window-title' format '%n@%m: %s'
 
 # Set the tab title format.
 zstyle ':prezto:module:terminal:tab-title' format '%m: %s'
+
+#
+# Tmux
+#
+
+# Integrate with iTerm2.
+zstyle ':prezto:module:tmux:iterm' integrate 'yes'

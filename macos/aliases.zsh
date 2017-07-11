@@ -47,3 +47,7 @@ function plxml() {
 function plbin() {
 	plutil -convert binary1 $1
 }
+
+function dmenv() {
+  eval $(docker-machine env)
+}

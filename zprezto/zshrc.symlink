@@ -19,3 +19,5 @@ unset file
 # Add dotfiles functions to fpath and load them
 fpath=($DOTFILES/functions $fpath)
 autoload -U $DOTFILES/functions/*(:t)
+
+unalias-safe o
