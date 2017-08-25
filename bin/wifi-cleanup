@@ -1,0 +1,10 @@
+#!/usr/bin/env python
+
+import os
+import plistlib
+
+prefs = plistlib.readPlist('/Library/Preferences/SystemConfiguration/com.apple.airport.preferences.plist')
+
+for _, network in prefs['KnownNetworks'].items():
+    if network['SecurityType'] == 'Open':
+        os.system('networksetup -removepreferredwirelessnetwork en0 "{}"'.format(network['SSIDString']))
