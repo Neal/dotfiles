@@ -24,7 +24,9 @@ zstyle ':prezto:load' pmodule-dirs $HOME/.zprezto-contrib
 # Set the Prezto modules to load (browse modules).
 # The order matters.
 zstyle ':prezto:load' pmodule \
+  'archive' \
   'autosuggestions' \
+  'docker' \
   'fasd' \
   'git' \
   'gpg' \
@@ -32,7 +34,6 @@ zstyle ':prezto:load' pmodule \
   'homebrew' \
   'osx' \
   'rsync' \
-  'syntax-highlighting' \
   'tmux' \
   'environment' \
   'terminal' \
@@ -42,7 +43,10 @@ zstyle ':prezto:load' pmodule \
   'spectrum' \
   'utility' \
   'completion' \
-  'prompt'
+  'prompt' \
+  'fast-syntax-highlighting' \
+  'zsh-autoenv' \
+  'zsh-iterm-touchbar'
 
 #
 # Editor
