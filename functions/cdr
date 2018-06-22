@@ -1,6 +1,4 @@
 # mkdir a random dir and cd to it
 function cdr() {
-	local dir=/tmp/$(openssl rand -hex 10)
-	mkdir -p $dir
-	cd $dir
+  cd $(mktemp -d)
 }
