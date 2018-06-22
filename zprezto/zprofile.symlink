@@ -72,3 +72,9 @@ fi
 #
 
 TMPPREFIX="$(mktemp -d)/zsh"
+
+#
+# CocoaPods
+#
+
+export COCOAPODS_DISABLE_STATS=true
