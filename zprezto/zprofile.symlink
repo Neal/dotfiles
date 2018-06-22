@@ -44,6 +44,7 @@ path=(
   ./bin
   $HOME/bin
   $HOME/.rbenv/shims
+  /usr/local/opt/python/libexec/bin
   /usr/local/opt/ruby/bin
   /usr/local/{bin,sbin}
   $GOPATH/bin
