@@ -36,38 +36,31 @@ set -g mouse on
 
 ## status bar
 # all
-set -g status-fg white
-set -g status-bg colour235
+set -g status-style fg=white,bg=colour235
 
 # left
 set -g status-left-length 16
-set -g status-left-attr dim
+set -g status-left-style dim
 set -g status-left "#[fg=green]#H:#S#[default] "
 
 # right
 set -g status-right-length 64
-set -g status-right-attr dim
-set -g status-right "#[fg=yellow]%d %b %H:%M#[default]"
+set -g status-right-style dim
+set -g status-right "#($HOME/.tmux.bin/kube 250 blue) #[fg=yellow]%d %b %H:%M#[default]"
 
 ## window options
-setw -g window-status-fg blue
-setw -g window-status-bg default
-setw -g window-status-current-fg blue
-setw -g window-status-current-bg default
-setw -g window-status-current-attr bright,italics
+setw -g window-status-style fg=blue,bg=default
+setw -g window-status-current-style fg=blue,bg=default,bright,italics
 setw -g window-status-current-format "#I:#W"
-setw -g window-status-activity-fg red
-setw -g window-status-activity-bg default
-setw -g window-status-activity-attr bright
+setw -g window-status-activity-style fg=red,bg=default,bright
 setw -g window-status-format "#I:#W"
 
 # message
-set -g message-fg black
-set -g message-bg magenta
-set -g message-attr bright
+set -g message-style fg=black,bg=magenta,bright
 
 # notifications
-setw -g monitor-activity on
+setw -g monitor-activity off
+setw -g monitor-bell on
 
 # other
 # set -g default-command "reattach-to-user-namespace -l ${SHELL}"
@@ -81,7 +74,7 @@ bind / command-prompt "split-window 'exec man %%'"
 bind S command-prompt "neww 'exec ssh %%'"
 
 # quick view of processes
-bind '~' split-window "exec htop"
+bind 'h' split-window "exec htop"
 
 # scrollback buffer n lines
 set -g history-limit 10000
@@ -91,11 +84,11 @@ unbind y
 bind y copy-mode
 unbind p
 bind p paste-buffer
-bind -t vi-copy H start-of-line
-bind -t vi-copy L end-of-line
-bind -t vi-copy v begin-selection
-bind -t vi-copy y copy-selection
-bind -t vi-copy Escape cancel
+# bind -t vi-copy H start-of-line
+# bind -t vi-copy L end-of-line
+# bind -t vi-copy v begin-selection
+# bind -t vi-copy y copy-selection
+# bind -t vi-copy Escape cancel
 
 ## Split bindings
 unbind -
@@ -111,7 +104,7 @@ bind - split-window -v
 bind _ split-window -v
 bind s split-window -v
 bind C-s split-window -v
-bind \ split-window -h
+bind \\ split-window -h
 bind | split-window -h
 bind v split-window -h
 bind C-v split-window -h
@@ -167,16 +160,16 @@ bind '"' choose-window
 
 # reload tmux config
 unbind r
-bind r source-file ~/.tmux.conf \; display 'Reloaded tmux config.'
+bind r source-file ~/.tmux.conf
 
 
 bind-key -T root PPage if-shell -F "#{alternate_on}" "send-keys PPage" "copy-mode -e; send-keys PPage"
-bind-key -t vi-copy PPage page-up
-bind-key -t vi-copy NPage page-down
+# bind-key -t vi-copy PPage page-up
+# bind-key -t vi-copy NPage page-down
 bind-key -T root WheelUpPane if-shell -F -t = "#{alternate_on}" "send-keys -M" "select-pane -t =; copy-mode -e; send-keys -M"
 bind-key -T root WheelDownPane if-shell -F -t = "#{alternate_on}" "send-keys -M" "select-pane -t =; send-keys -M"
-bind-key -t vi-copy WheelUpPane halfpage-up
-bind-key -t vi-copy WheelDownPane halfpage-down
+# bind-key -t vi-copy WheelUpPane halfpage-up
+# bind-key -t vi-copy WheelDownPane halfpage-down
 
 
 set -ga terminal-overrides ',xterm*:smcup@:rmcup@'
